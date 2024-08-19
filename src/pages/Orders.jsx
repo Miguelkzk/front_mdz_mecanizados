@@ -1,4 +1,4 @@
-function JobsTable() {
+function OrdersTable() {
 
   return (
     <>
@@ -9,4 +9,4 @@ function JobsTable() {
 
   )
 }
-export default JobsTable;
+export default OrdersTable;
