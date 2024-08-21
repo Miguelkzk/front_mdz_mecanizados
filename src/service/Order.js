@@ -4,5 +4,10 @@ export const OrderService = {
     const response = await fetch(`${BASE_URL}/orders/`);
     const data = await response.json();
     return data;
+  },
+  getOder: async (order) => {
+    const response = await fetch(`${BASE_URL}/orders/${order.id}`);
+    const data = await response.json();
+    return data;
   }
 }
