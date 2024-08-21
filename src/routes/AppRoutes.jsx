@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ColorSchemesExample from '../components/NavBar';
-import OrdersTable from '../pages/Orders';
+import Orders from '../pages/Orders';
 
 const AppRoutes = () => {
   return (
@@ -8,7 +8,7 @@ const AppRoutes = () => {
       <div>
         < ColorSchemesExample />
         <Routes>
-          <Route path="/" element={< OrdersTable />} />
+          <Route path="/" element={< Orders />} />
         </Routes>
       </div>
     </Router>
