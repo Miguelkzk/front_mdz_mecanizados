@@ -39,6 +39,7 @@ function OrderDetail() {
         <DetailItem label="Precio unitario" value={detail.unit_price} />
         <DetailItem label="Observaciones" value={detail.comment} />
         <DetailItem label="Precio total" value={detail.total_price} />
+        <DetailItem label="Moneda" value={detail.currency} />
         <DetailItem label="Estado" value={t(detail.state)} />
       </div>
 
