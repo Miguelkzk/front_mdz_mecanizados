@@ -14,7 +14,8 @@ const resources = {
       'client': 'Cliente',
       'state': 'Estado',
       'without_material': 'Sin material',
-      'in_progress': 'En progreso'
+      'in_progress': 'En progreso',
+      'incomplete': 'Incompleto'
 
     }
   }

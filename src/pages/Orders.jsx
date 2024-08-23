@@ -31,7 +31,8 @@ function Orders() {
 
 
   const handleCloseModal = () =>{
-    setShowForm(false)
+    setShowForm(false);
+    fetchOrders();
   }
 
   return (
