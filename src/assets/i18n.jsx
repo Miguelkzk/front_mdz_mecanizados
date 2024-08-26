@@ -13,10 +13,13 @@ const resources = {
       'purchase_order': 'Orden de compra',
       'client': 'Cliente',
       'state': 'Estado',
-      'without_material': 'Sin material',
-      'in_progress': 'En progreso',
-      'incomplete': 'Incompleto'
 
+      'without_material': 'Sin material',
+      'with_material_but_not_started': 'Con material, pero no inciado',
+      'in_progress': 'En progreso',
+      'not_invoiced': 'No facturado',
+      'delivered_and_invoiced': 'Entregado y facturado',
+      'incomplete': 'Incompleto',
     }
   }
 };

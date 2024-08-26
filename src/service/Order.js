@@ -1,7 +1,9 @@
 const BASE_URL = 'http://127.0.0.1:3000'
 export const OrderService = {
-  getOrders: async () => {
-    const response = await fetch(`${BASE_URL}/orders/`);
+
+  getOrders: async (filters) => {
+    console.log(filters)
+    const response = await fetch(`${BASE_URL}/orders/?state=${filters.state}&purchase_order=${filters.purchaseOrder}&client_name=${filters.clientName}&name=${filters.orderName}`);
     const data = await response.json();
     return data;
   },
