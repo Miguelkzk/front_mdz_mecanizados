@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { FaFilePdf } from 'react-icons/fa';
 import { useTranslation } from "react-i18next";
 import { format } from 'date-fns';
+import { Button } from "react-bootstrap";
+import UploadForm from "../uploadForm";
+import { DrawingsService } from "../../service/drawings";
 
 
 function OrderDetail() {
@@ -11,6 +14,8 @@ function OrderDetail() {
   const { order } = location.state || {};
   const [detail, setDetail] = useState({});
   const { t } = useTranslation();
+  const [isUploading, setIsUploading] = useState(false);
+  const [showUploadModal, setshowUploadModal] = useState(false)
 
   useEffect(() => {
     fetchOrder();
@@ -18,6 +23,7 @@ function OrderDetail() {
 
   const fetchOrder = async () => {
     const data = await OrderService.getOder(order);
+    console.log(detail)
     setDetail(data);
   };
 
@@ -25,8 +31,34 @@ function OrderDetail() {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
     return new Date(dateString).toLocaleDateString('es-ES', options);
   };
+  const handleCloseUploadModal = ()=>{
+    setshowUploadModal(false)
+    fetchOrder();
+  }
+
+  const uploadFile = async (file) => {
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("order_id", detail.id);
+    formData.append("parent_id", detail.drive_id);
+
+    try {
+      setIsUploading(true);
+      await DrawingsService.newDrawing(formData);
+    } catch (error) {
+      console.error("Error subiendo el archivo:", error);
+    } finally {
+      setIsUploading(false);
+      handleCloseUploadModal();
+    }
+  };
+
 
   return (
+    <>
+
     <div style={styles.container}>
       <h2 style={styles.title}>Detalle de la Orden</h2>
       <div style={styles.detailContainer}>
@@ -43,20 +75,33 @@ function OrderDetail() {
         <DetailItem label="Estado" value={t(detail.state)} />
       </div>
 
-      {detail.drawings && detail.drawings.length > 0 && (
+
         <div style={styles.drawingsContainer}>
+          <div style={styles.HeaderContainer}>
           <h3 style={styles.sectionTitle}>Planos</h3>
-          {detail.drawings.map((drawing) => (
+          <Button style={styles.newDrawButton} onClick={()=> setshowUploadModal(true)}>Agregar plano</Button>
+          </div>
+
+
+          {detail.drawings && detail.drawings.length > 0 && (
+          detail.drawings.map((drawing) => (
             <div key={drawing.id} style={styles.drawingItem}>
               <FaFilePdf style={styles.icon} />
               <a href={drawing.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
                 {drawing.name}
               </a>
             </div>
-          ))}
+          ))
+          )}
         </div>
-      )}
+
     </div>
+      <UploadForm
+      show={showUploadModal}
+      handleClose={handleCloseUploadModal}
+      handleSubmit= {uploadFile}
+      isUploading={isUploading}/>
+    </>
   );
 }
 
@@ -129,6 +174,22 @@ const styles = {
     color: "#007bff",
     fontWeight: "bold",
   },
+  HeaderContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    flexWrap: 'wrap',
+  },
+  newDrawButton: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    marginBottom: '20px',
+    padding: '10px 20px',
+    fontSize: '16px',
+    flex: "1 1 100%"
+  }
 };
 
 export default OrderDetail;
