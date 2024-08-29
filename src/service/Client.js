@@ -3,6 +3,11 @@ export const ClientService = {
   getClientByName: async (name) => {
     const response = await fetch(`${BASE_URL}/clients/find_by_name?name=${name}`);
     const data = await response.json();
-    return data;
+    return data
+  },
+  getClients: async () => {
+    const response = await fetch(`${BASE_URL}/clients/`);
+    const data = await response.json();
+    return data
   }
 }

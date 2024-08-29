@@ -175,7 +175,6 @@ const styles = {
   },
   filter: {
     width: '100%', // Se ajusta a su contenedor
-    marginBottom: '2%',
   },
   formFilterInput: {
     width: '100%', // Se ajusta a su contenedor
