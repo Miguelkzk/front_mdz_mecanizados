@@ -34,7 +34,7 @@ function Clients() {
 
 const styles = {
   container: {
-    maxWidth: "80%",
+    maxWidth: "50%",
     margin: "20px auto",
     padding: "20px",
     backgroundColor: "#f9f9f9",

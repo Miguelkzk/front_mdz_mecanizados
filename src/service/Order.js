@@ -25,5 +25,19 @@ export const OrderService = {
   const data = await response.json();
   return data;
 
+  },
+  generateWorkOrder: async (order) => {
+    const response = await fetch(`${BASE_URL}/orders/${order.id}/generate_work_order`,
+    {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(order)
+    }
+  );
+  const data = await response.json();
+  return data;
+
   }
 }

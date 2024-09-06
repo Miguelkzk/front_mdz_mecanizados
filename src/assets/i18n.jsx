@@ -20,6 +20,10 @@ const resources = {
       'not_invoiced': 'No facturado',
       'delivered_and_invoiced': 'Entregado y facturado',
       'incomplete': 'Incompleto',
+      'description': 'Descripción',
+      'quantity': 'Cantidad',
+      'supplier_note': 'Remito proveedor',
+      'supplier_name': 'Proveedor'
     }
   }
 };

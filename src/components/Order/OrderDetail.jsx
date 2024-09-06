@@ -1,13 +1,12 @@
 import { useLocation } from "react-router-dom";
 import { OrderService } from "../../service/Order";
 import { useEffect, useState } from "react";
-import { FaFilePdf } from 'react-icons/fa';
+import { FaFileExcel, FaFilePdf } from 'react-icons/fa';
 import { useTranslation } from "react-i18next";
-import { format } from 'date-fns';
 import { Button } from "react-bootstrap";
 import UploadForm from "../uploadForm";
 import { DrawingsService } from "../../service/drawings";
-
+import GenericTable from "../GenericTable";
 
 function OrderDetail() {
   const location = useLocation();
@@ -15,7 +14,13 @@ function OrderDetail() {
   const [detail, setDetail] = useState({});
   const { t } = useTranslation();
   const [isUploading, setIsUploading] = useState(false);
-  const [showUploadModal, setshowUploadModal] = useState(false)
+  const [showUploadModal, setshowUploadModal] = useState(false);
+  const fields = [
+    'description',
+    'quantity',
+    'supplier_name',
+    'supplier_note'
+  ];
 
   useEffect(() => {
     fetchOrder();
@@ -23,7 +28,6 @@ function OrderDetail() {
 
   const fetchOrder = async () => {
     const data = await OrderService.getOder(order);
-    console.log(detail)
     setDetail(data);
   };
 
@@ -31,10 +35,11 @@ function OrderDetail() {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
     return new Date(dateString).toLocaleDateString('es-ES', options);
   };
-  const handleCloseUploadModal = ()=>{
-    setshowUploadModal(false)
+
+  const handleCloseUploadModal = () => {
+    setshowUploadModal(false);
     fetchOrder();
-  }
+  };
 
   const uploadFile = async (file) => {
     if (!file) return;
@@ -55,52 +60,89 @@ function OrderDetail() {
     }
   };
 
+  const generateWorkOrder = async () =>{
+    try {
+      await OrderService.generateWorkOrder(detail)
+      fetchOrder();
+    } catch(error){
+      console.log(error)
+    }
+  }
 
   return (
     <>
-
-    <div style={styles.container}>
-      <h2 style={styles.title}>Detalle de la Orden</h2>
-      <div style={styles.detailContainer}>
-        <DetailItem label="Cliente" value={detail.client} />
-        <DetailItem label="Orden de compra" value={detail.purchase_order} />
-        <DetailItem label="Nombre" value={detail.name} />
-        <DetailItem label="Cantidad" value={detail.quantity} />
-        <DetailItem label="Fecha de ingreso" value={formatDate(detail.ingresed_at)} />
-        <DetailItem label="Fecha de entrega" value={formatDate(detail.delivery_at)} />
-        <DetailItem label="Precio unitario" value={detail.unit_price} />
-        <DetailItem label="Observaciones" value={detail.comment} />
-        <DetailItem label="Precio total" value={detail.total_price} />
-        <DetailItem label="Moneda" value={detail.currency} />
-        <DetailItem label="Estado" value={t(detail.state)} />
-      </div>
-
-
-        <div style={styles.drawingsContainer}>
-          <div style={styles.HeaderContainer}>
-          <h3 style={styles.sectionTitle}>Planos</h3>
-          <Button style={styles.newDrawButton} onClick={()=> setshowUploadModal(true)}>Agregar plano</Button>
+      <div style={styles.wrapper}>
+        <div style={styles.container}>
+          <h2 style={styles.title}>Detalle de la Orden</h2>
+          <div style={styles.detailContainer}>
+            <DetailItem label="Cliente" value={detail.client} />
+            <DetailItem label="Orden de compra" value={detail.purchase_order} />
+            <DetailItem label="Nombre" value={detail.name} />
+            <DetailItem label="Cantidad" value={detail.quantity} />
+            <DetailItem label="Fecha de ingreso" value={formatDate(detail.ingresed_at)} />
+            <DetailItem label="Fecha de entrega" value={formatDate(detail.delivery_at)} />
+            <DetailItem label="Precio unitario" value={detail.unit_price} />
+            <DetailItem label="Observaciones" value={detail.comment} />
+            <DetailItem label="Precio total" value={detail.total_price} />
+            <DetailItem label="Moneda" value={detail.currency} />
+            <DetailItem label="Estado" value={t(detail.state)} />
           </div>
 
-
-          {detail.drawings && detail.drawings.length > 0 && (
-          detail.drawings.map((drawing) => (
-            <div key={drawing.id} style={styles.drawingItem}>
-              <FaFilePdf style={styles.icon} />
-              <a href={drawing.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                {drawing.name}
-              </a>
+          <div style={styles.drawingsContainer}>
+            <div style={styles.headerContainer}>
+              <h3 style={styles.sectionTitle}>Planos</h3>
+              <Button style={styles.newDrawButton} onClick={() => setshowUploadModal(true)}>Agregar plano</Button>
             </div>
-          ))
-          )}
+
+            {detail.drawings && detail.drawings.length > 0 && (
+              detail.drawings.map((drawing) => (
+                <div key={drawing.id} style={styles.drawingItem}>
+                  <FaFilePdf style={styles.icon} />
+                  <a href={drawing.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                    {drawing.name}
+                  </a>
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
-    </div>
+        <div style={styles.materialsContainer}>
+          <div style={styles.headerContainer}>
+            <h3 style={styles.sectionTitle}>Materiales</h3>
+            <Button style={styles.newDrawButton}>Agregar material</Button>
+          </div>
+          {detail.materials && detail.materials.length > 0 && (
+            <GenericTable
+              fields={fields}
+              elements={detail.materials}
+              viewButton={false}
+            />
+          )}
+            <div style={styles.drawingsContainer}>
+            <div style={styles.headerContainer}>
+              <h3 style={styles.sectionTitle}>Orden de trabajo</h3>
+              <Button style={styles.newDrawButton} onClick={generateWorkOrder}>Generar orden</Button>
+            </div>
+
+            {detail.work_order != null && (
+              <div style={styles.drawingItem}>
+                <FaFileExcel style={styles.iconExcel} />
+                <a href={detail.work_order.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                  {detail.work_order.name}
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       <UploadForm
-      show={showUploadModal}
-      handleClose={handleCloseUploadModal}
-      handleSubmit= {uploadFile}
-      isUploading={isUploading}/>
+        show={showUploadModal}
+        handleClose={handleCloseUploadModal}
+        handleSubmit={uploadFile}
+        isUploading={isUploading}
+      />
     </>
   );
 }
@@ -113,14 +155,31 @@ const DetailItem = ({ label, value }) => (
 );
 
 const styles = {
-  container: {
-    maxWidth: "800px",
+  wrapper: {
+    display: "flex",
+    justifyContent: "space-between",
+    maxWidth: "80%",
     margin: "20px auto",
+    gap: "20px",
     padding: "20px",
     backgroundColor: "#f9f9f9",
     borderRadius: "8px",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+  },
+  container: {
+    flex: 1,
+    padding: "20px",
+    backgroundColor: "#ffffff",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  },
+  materialsContainer: {
+    flex: 1,
+    padding: "20px",
+    backgroundColor: "#ffffff",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   },
   title: {
     textAlign: "center",
@@ -169,27 +228,25 @@ const styles = {
     marginRight: "10px",
     color: "#d32f2f",
   },
+  iconExcel: {
+    marginRight: "10px",
+    color: "#22d319",
+  },
   drawingLink: {
     textDecoration: "none",
     color: "#007bff",
     fontWeight: "bold",
   },
-  HeaderContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-    flexWrap: 'wrap',
+  headerContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
   },
   newDrawButton: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    marginBottom: '20px',
-    padding: '10px 20px',
-    fontSize: '16px',
-    flex: "1 1 100%"
-  }
+    padding: "8px 20px",
+    fontSize: "16px",
+  },
 };
 
 export default OrderDetail;
