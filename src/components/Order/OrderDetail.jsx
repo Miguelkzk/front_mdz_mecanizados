@@ -7,11 +7,13 @@ import { Button } from "react-bootstrap";
 import UploadForm from "../uploadForm";
 import { DrawingsService } from "../../service/drawings";
 import GenericTable from "../GenericTable";
+import MaterialForm from "./MaterialForm";
 
 function OrderDetail() {
   const location = useLocation();
   const { order } = location.state || {};
   const [detail, setDetail] = useState({});
+  const [materialFormModal, setMaterialFormModal] =useState(false);
   const { t } = useTranslation();
   const [isUploading, setIsUploading] = useState(false);
   const [showUploadModal, setshowUploadModal] = useState(false);
@@ -19,7 +21,9 @@ function OrderDetail() {
     'description',
     'quantity',
     'supplier_name',
+    'ingresed_at',
     'supplier_note'
+
   ];
 
   useEffect(() => {
@@ -68,7 +72,10 @@ function OrderDetail() {
       console.log(error)
     }
   }
-
+  const handleCloseMaterialModal = () => {
+    setMaterialFormModal(false);
+    fetchOrder();
+  }
   return (
     <>
       <div style={styles.wrapper}>
@@ -110,7 +117,7 @@ function OrderDetail() {
         <div style={styles.materialsContainer}>
           <div style={styles.headerContainer}>
             <h3 style={styles.sectionTitle}>Materiales</h3>
-            <Button style={styles.newDrawButton}>Agregar material</Button>
+            <Button style={styles.newDrawButton} onClick={()=> setMaterialFormModal(true)}>Agregar material</Button>
           </div>
           {detail.materials && detail.materials.length > 0 && (
             <GenericTable
@@ -142,6 +149,12 @@ function OrderDetail() {
         handleClose={handleCloseUploadModal}
         handleSubmit={uploadFile}
         isUploading={isUploading}
+      />
+
+      <MaterialForm
+      show={materialFormModal}
+      handleClose={handleCloseMaterialModal}
+      orderID={detail.id}
       />
     </>
   );
@@ -205,7 +218,7 @@ const styles = {
     color: "#555",
   },
   value: {
-    color: "#777",
+    color: "#555",
   },
   drawingsContainer: {
     marginTop: "20px",

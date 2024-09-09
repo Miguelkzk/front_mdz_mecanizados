@@ -23,7 +23,8 @@ const resources = {
       'description': 'Descripción',
       'quantity': 'Cantidad',
       'supplier_note': 'Remito proveedor',
-      'supplier_name': 'Proveedor'
+      'supplier_name': 'Proveedor',
+      'ingresed_at': 'Fecha de ingreso'
     }
   }
 };
