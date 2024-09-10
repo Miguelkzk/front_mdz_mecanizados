@@ -9,6 +9,7 @@ import { DrawingsService } from "../../service/drawings";
 import GenericTable from "../GenericTable";
 import MaterialForm from "./MaterialForm";
 import { CertificateOfMaterialsService } from "../../service/certificateOfMaterials";
+import { SupplierNoteSerive } from "../../service/supplierNote";
 
 function OrderDetail() {
   const location = useLocation();
@@ -62,6 +63,8 @@ function OrderDetail() {
         await DrawingsService.newDrawing(formData);
       } else if (fileType === 'certificate') {
         await CertificateOfMaterialsService.newCertificate(formData)
+      } else if (fileType === 'supplierNote') {
+        await SupplierNoteSerive.newSupplierNote(formData)
       }
     } catch (error) {
       console.error("Error subiendo el archivo:", error);
@@ -134,6 +137,24 @@ function OrderDetail() {
               viewButton={false}
             />
           )}
+          <div style={styles.drawingsContainer}>
+          <hr />
+            <div style={styles.headerContainer}>
+              <h3 style={styles.sectionTitle}>Remitos del proveedor</h3>
+              <Button style={styles.newDrawButton} onClick={() => { setFileType('supplierNote'); setshowUploadModal(true); }}>Cargar remito</Button>
+            </div>
+
+            {detail.supplier_delivery_notes && detail.supplier_delivery_notes.length > 0 && (
+              detail.supplier_delivery_notes.map((supplier_note) => (
+                <div key={supplier_note.id} style={styles.drawingItem}>
+                   <FaImage style={styles.iconImage} />
+                  <a href={supplier_note.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                    {supplier_note.name}
+                  </a>
+                </div>
+              ))
+            )}
+          </div>
 
           <div style={styles.drawingsContainer}>
           <hr />
