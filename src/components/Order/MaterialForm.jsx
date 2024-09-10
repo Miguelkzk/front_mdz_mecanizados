@@ -10,6 +10,7 @@ function MaterialForm({ show, handleClose, orderID }) {
   const [material, setMaterial] = useState({
     description: '',
     quantity: '',
+    supplier_note: '',
     ingresed_at: '',
     order_id: '',
     supplier_id: ''
@@ -20,6 +21,7 @@ function MaterialForm({ show, handleClose, orderID }) {
     setMaterial({
       description: '',
       quantity: '',
+      supplier_note: '',
       ingresed_at: '',
       order_id: '',
       supplier_id: ''
@@ -52,7 +54,8 @@ function MaterialForm({ show, handleClose, orderID }) {
 
   const validateForm = () => {
     let formErrors = {};
-    if (!material.description) formErrors.description = "La descripcion es requerida";
+    if (!material.description) formErrors.description = "La descripción es requerida";
+    if (!material.supplier_note) formErrors.description = "El remito es requerido";
     if (!material.quantity || material.quantity <= 0) formErrors.quantity = "La cantidad debe ser mayor que 0";
     if (!material.ingresed_at) formErrors.ingresed_at = "La fecha de ingreso es requerida";
     if (!material.supplier_id) formErrors.supplier_id = "Debe seleccionar un proveedor";
@@ -96,7 +99,7 @@ function MaterialForm({ show, handleClose, orderID }) {
             <Form.Label>Descripcion</Form.Label>
             <FormControl
               type="text"
-              placeholder="Ingrese la descripcion"
+              placeholder="Ingrese la descripción del material"
               name="description"
               value={material.description}
               onChange={handleInputChange}
@@ -109,13 +112,27 @@ function MaterialForm({ show, handleClose, orderID }) {
             <Form.Label>Cantidad</Form.Label>
             <FormControl
               type="number"
-              placeholder="Ingrese la cantidad"
+              placeholder="Ingrese la cantidad del material"
               name="quantity"
               suppliervalue={material.quantity}
               onChange={handleInputChange}
               isInvalid={!!errors.quantity}
+              min="0"
             />
             {errors.quantity && <Form.Text className="text-danger">{errors.quantity}</Form.Text>}
+          </Form.Group>
+
+          <Form.Group className="mt-2">
+            <Form.Label>Remito del proveedor</Form.Label>
+            <FormControl
+              type="text"
+              placeholder="Ingrese el n­úmero de remito"
+              name="supplier_note"
+              value={material.supplier_note}
+              onChange={handleInputChange}
+              isInvalid={!!errors.description}
+            />
+            {errors.description && <Form.Text className="text-danger">{errors.description}</Form.Text>}
           </Form.Group>
 
           <Form.Group className="mt-2">

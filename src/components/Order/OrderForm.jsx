@@ -1,16 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form, FormControl, Modal, ModalBody, ModalTitle } from "react-bootstrap";
 import { ClientService } from "../../service/Client";
 import InfoModal from "../infoModal";
-import { OrderService } from "../../service/Order";
 
 function OrderForm({ show, handleClose }) {
-  const [filter, setFilter] = useState('');
-  const [client, setClient] = useState({});
-  const [exceptionClient, setException] = useState(false);
-  const [ok, setOk] = useState(false);
   const [errors, setErrors] = useState({});
   const [showinfoModal,setshowinfoModal] = useState(false)
+  const [clientName,setClientName] = useState('');
+  const [filteredClients, setFilteredClients] = useState([]);
   const [order, setOrder] = useState({
     name: '',
     purchase_order: '',
@@ -24,11 +21,7 @@ function OrderForm({ show, handleClose }) {
   });
 
   const handleCloseModal = () => {
-    setFilter('');
     handleClose();
-    setException(false);
-    setOk(false);
-    setClient({});
     setOrder({
       name: '',
       purchase_order: '',
@@ -42,6 +35,8 @@ function OrderForm({ show, handleClose }) {
 
     });
     setErrors({});
+    setClientName('');
+    setFilteredClients([]);
   };
 
   const handleCloseInfoModal = () => {
@@ -50,7 +45,7 @@ function OrderForm({ show, handleClose }) {
 
   const validateForm = () => {
     let formErrors = {};
-    if(!filter) formErrors.client = "El cliente es requerido";
+    if(!order.client_id) formErrors.client = "Debe seleccionar un cliente";
     if (!order.name) formErrors.name = "El nombre es requerido";
     if (!order.purchase_order) formErrors.purchase_order = "La orden de compra es requerida";
     if (!order.quantity || order.quantity <= 0) formErrors.quantity = "La cantidad debe ser mayor que 0";
@@ -80,9 +75,7 @@ function OrderForm({ show, handleClose }) {
 
   const handleSave = async () => {
     if (validateForm()) {
-      if(exceptionClient == false) {
         try {
-          setOrder(order.client_id = client.id)
           console.log(order)
           await OrderService.newOrder(order);
           handleCloseModal();
@@ -90,21 +83,32 @@ function OrderForm({ show, handleClose }) {
         } catch (error) {
           console.log(error)
         }
-      }
     }
   }
 
-  const searchClient = async () => {
-    setException(false);
-    setOk(false);
-    setClient({});
-    try {
-      const data = await ClientService.getClientByName(filter);
-      setClient(data);
-      setOk(true);
-    } catch (error) {
-      setException(true);
+  const handleClientSelect = (client) => {
+    setClientName(client.name);
+    setOrder((prevOrder) => ({
+      ...prevOrder,
+      client_id: client.id
+    }));
+
+    setTimeout(() => {
+      setFilteredClients([]);
+    }, 100);
+  }
+
+  useEffect(() => {
+    if (clientName.length > 0) {
+      fetchClients();
+    } else {
+      setFilteredClients([]);
     }
+  }, [clientName]);
+
+  const fetchClients = async () => {
+    const callClients = await ClientService.getClients(clientName)
+    setFilteredClients(callClients); // Filtra la lista conforme el usuario escribe
   };
 
   return (<>
@@ -116,34 +120,32 @@ function OrderForm({ show, handleClose }) {
         <div style={{ display: 'flex', height: '100%' }}>
           <div style={{ flex: 1, paddingRight: '20px', borderRight: '1px solid #ddd' }}>
             <Form>
-              <div style={{ display: 'flex', alignItems: 'initial' }}>
                 <Form.Group style={{ flex: 1, marginRight: '10px' }}>
                   <Form.Label>Buscar cliente</Form.Label>
                   <Form.Control
                     type="text"
-                    value={filter}
-                    name = "client"
-                    onChange={(e) => setFilter(e.target.value.toUpperCase())}
-                    placeholder="Ingrese el nombre"
+                    value={clientName}
+                    onChange={(e) => setClientName(e.target.value)}
+                    placeholder="Ingrese el nombre del cliente"
                     isInvalid={!!errors.client}
-
                   />
-                {errors.client && <Form.Text className="text-danger">{errors.client}</Form.Text>}
+                {errors.client_id && <Form.Text className="text-danger">{errors.client_id}</Form.Text>}
 
+                {filteredClients.length > 0 && (
+                  <ul style={{maxHeight: '150px', overflowY: 'auto', backgroundColor: 'white', border: '1px solid #ced4da'}}>
+                  {filteredClients.map((client) => (
+                    <li
+                      key={client.id}
+                      style={{ padding: '5px', cursor: 'pointer' }}
+                      onClick={()=> handleClientSelect(client)}
+                    >
+                      {client.name}
+                    </li>
+                  ))}
+                  </ul>
+                )}
                 </Form.Group>
-                <Button
-                  style={{ maxHeight: '40px', marginTop: '9%' }}
-                  onClick={searchClient}
-                >
-                  Buscar
-                </Button>
-              </div>
-              {exceptionClient && (
-                <p style={{ color: 'red', fontWeight: 'bold' }}>No se encontró el cliente</p>
-              )}
-              {ok && (
-                <p style={{ color: '#2be337', fontWeight: 'bold' }}>Se encontró el cliente</p>
-              )}
+
               <Form.Group className="mt-2">
                 <Form.Label>Orden de compra</Form.Label>
                 <FormControl
@@ -156,6 +158,7 @@ function OrderForm({ show, handleClose }) {
                 />
                 {errors.purchase_order && <Form.Text className="text-danger">{errors.purchase_order}</Form.Text>}
               </Form.Group>
+
               <Form.Group className="mt-2">
                 <Form.Label>Nombre</Form.Label>
                 <FormControl
@@ -168,6 +171,7 @@ function OrderForm({ show, handleClose }) {
                 />
                 {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
               </Form.Group>
+
               <Form.Group className="mt-2">
                 <Form.Label>Cantidad</Form.Label>
                 <FormControl
@@ -177,9 +181,11 @@ function OrderForm({ show, handleClose }) {
                   value={order.quantity}
                   onChange={handleInputChange}
                   isInvalid={!!errors.quantity}
+                  min="0"
                 />
                 {errors.quantity && <Form.Text className="text-danger">{errors.quantity}</Form.Text>}
               </Form.Group>
+
               <Form.Group className="mt-2">
                 <Form.Label>Tipo de moneda</Form.Label>
                 <Form.Select
@@ -194,6 +200,7 @@ function OrderForm({ show, handleClose }) {
                 </Form.Select>
                 {errors.currency && <Form.Text className="text-danger">{errors.currency}</Form.Text>}
               </Form.Group>
+
             </Form>
           </div>
           <div style={{ flex: 1, paddingLeft: '20px' }}>
@@ -209,6 +216,7 @@ function OrderForm({ show, handleClose }) {
                 />
                 {errors.ingresed_at && <Form.Text className="text-danger">{errors.ingresed_at}</Form.Text>}
               </Form.Group>
+
               <Form.Group className="mt-2">
                 <Form.Label>Fecha de entrega</Form.Label>
                 <Form.Control
@@ -220,6 +228,7 @@ function OrderForm({ show, handleClose }) {
                 />
                 {errors.delivery_at && <Form.Text className="text-danger">{errors.delivery_at}</Form.Text>}
               </Form.Group>
+
               <Form.Group className="mt-2">
                 <Form.Label>Precio unitario</Form.Label>
                 <FormControl
@@ -229,9 +238,11 @@ function OrderForm({ show, handleClose }) {
                   value={order.unit_price}
                   onChange={handleInputChange}
                   isInvalid={!!errors.unit_price}
+                  min="0.0"
                 />
                 {errors.unit_price && <Form.Text className="text-danger">{errors.unit_price}</Form.Text>}
               </Form.Group>
+
               <Form.Group className="mt-2">
                 <Form.Label>Observaciones</Form.Label>
                 <FormControl
@@ -243,6 +254,7 @@ function OrderForm({ show, handleClose }) {
                   onChange={handleInputChange}
                 />
               </Form.Group>
+
             </Form>
           </div>
         </div>

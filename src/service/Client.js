@@ -5,8 +5,8 @@ export const ClientService = {
     const data = await response.json();
     return data
   },
-  getClients: async () => {
-    const response = await fetch(`${BASE_URL}/clients/`);
+  getClients: async (name) => {
+    const response = await fetch(`${BASE_URL}/clients/?name=${name}`);
     const data = await response.json();
     return data
   }
