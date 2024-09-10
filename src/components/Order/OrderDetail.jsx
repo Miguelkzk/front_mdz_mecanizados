@@ -1,22 +1,24 @@
 import { useLocation } from "react-router-dom";
 import { OrderService } from "../../service/Order";
 import { useEffect, useState } from "react";
-import { FaFileExcel, FaFilePdf } from 'react-icons/fa';
+import { FaFileExcel, FaFilePdf, FaImage } from 'react-icons/fa';
 import { useTranslation } from "react-i18next";
 import { Button } from "react-bootstrap";
 import UploadForm from "../uploadForm";
 import { DrawingsService } from "../../service/drawings";
 import GenericTable from "../GenericTable";
 import MaterialForm from "./MaterialForm";
+import { CertificateOfMaterialsService } from "../../service/certificateOfMaterials";
 
 function OrderDetail() {
   const location = useLocation();
   const { order } = location.state || {};
   const [detail, setDetail] = useState({});
-  const [materialFormModal, setMaterialFormModal] =useState(false);
+  const [materialFormModal, setMaterialFormModal] = useState(false);
   const { t } = useTranslation();
   const [isUploading, setIsUploading] = useState(false);
   const [showUploadModal, setshowUploadModal] = useState(false);
+  const [fileType, setFileType] = useState('');
   const fields = [
     'description',
     'quantity',
@@ -43,6 +45,7 @@ function OrderDetail() {
   const handleCloseUploadModal = () => {
     setshowUploadModal(false);
     fetchOrder();
+    setFileType('')
   };
 
   const uploadFile = async (file) => {
@@ -52,10 +55,14 @@ function OrderDetail() {
     formData.append("file", file);
     formData.append("order_id", detail.id);
     formData.append("parent_id", detail.drive_id);
-
     try {
       setIsUploading(true);
-      await DrawingsService.newDrawing(formData);
+
+      if (fileType === 'drawing') {
+        await DrawingsService.newDrawing(formData);
+      } else if (fileType === 'certificate') {
+        await CertificateOfMaterialsService.newCertificate(formData)
+      }
     } catch (error) {
       console.error("Error subiendo el archivo:", error);
     } finally {
@@ -64,11 +71,11 @@ function OrderDetail() {
     }
   };
 
-  const generateWorkOrder = async () =>{
+  const generateWorkOrder = async () => {
     try {
       await OrderService.generateWorkOrder(detail)
       fetchOrder();
-    } catch(error){
+    } catch (error) {
       console.log(error)
     }
   }
@@ -97,8 +104,9 @@ function OrderDetail() {
 
           <div style={styles.drawingsContainer}>
             <div style={styles.headerContainer}>
+
               <h3 style={styles.sectionTitle}>Planos</h3>
-              <Button style={styles.newDrawButton} onClick={() => setshowUploadModal(true)}>Agregar plano</Button>
+              <Button style={styles.newDrawButton} onClick={() => { setFileType('drawing'); setshowUploadModal(true); }}>Agregar plano</Button>
             </div>
 
             {detail.drawings && detail.drawings.length > 0 && (
@@ -117,7 +125,7 @@ function OrderDetail() {
         <div style={styles.materialsContainer}>
           <div style={styles.headerContainer}>
             <h3 style={styles.sectionTitle}>Materiales</h3>
-            <Button style={styles.newDrawButton} onClick={()=> setMaterialFormModal(true)}>Agregar material</Button>
+            <Button style={styles.newDrawButton} onClick={() => setMaterialFormModal(true)}>Agregar material</Button>
           </div>
           {detail.materials && detail.materials.length > 0 && (
             <GenericTable
@@ -126,7 +134,27 @@ function OrderDetail() {
               viewButton={false}
             />
           )}
-            <div style={styles.drawingsContainer}>
+
+          <div style={styles.drawingsContainer}>
+          <hr />
+            <div style={styles.headerContainer}>
+              <h3 style={styles.sectionTitle}>Certificado de matetiales</h3>
+              <Button style={styles.newDrawButton} onClick={() => { setFileType('certificate'); setshowUploadModal(true); }}>Cargar certificado</Button>
+            </div>
+
+            {detail.certificate_of_materials && detail.certificate_of_materials.length > 0 && (
+              detail.certificate_of_materials.map((certificate) => (
+                <div key={certificate.id} style={styles.drawingItem}>
+                   <FaImage style={styles.iconImage} />
+                  <a href={certificate.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                    {certificate.name}
+                  </a>
+                </div>
+              ))
+            )}
+          </div>
+          <div style={styles.drawingsContainer}>
+          <hr />
             <div style={styles.headerContainer}>
               <h3 style={styles.sectionTitle}>Orden de trabajo</h3>
               <Button style={styles.newDrawButton} onClick={generateWorkOrder}>Generar orden</Button>
@@ -152,9 +180,9 @@ function OrderDetail() {
       />
 
       <MaterialForm
-      show={materialFormModal}
-      handleClose={handleCloseMaterialModal}
-      orderID={detail.id}
+        show={materialFormModal}
+        handleClose={handleCloseMaterialModal}
+        orderID={detail.id}
       />
     </>
   );
@@ -222,6 +250,7 @@ const styles = {
   },
   drawingsContainer: {
     marginTop: "20px",
+    marginBottom: '30px'
   },
   sectionTitle: {
     fontSize: "24px",
@@ -244,6 +273,10 @@ const styles = {
   iconExcel: {
     marginRight: "10px",
     color: "#22d319",
+  },
+  iconImage: {
+    marginRight: "10px",
+    color: "rgb(0, 123, 255)"
   },
   drawingLink: {
     textDecoration: "none",

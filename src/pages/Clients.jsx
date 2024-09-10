@@ -11,7 +11,8 @@ function Clients() {
   }, []);
 
   const fetchClients = async () => {
-    const data = await ClientService.getClients();
+    const data = await ClientService.getClients(name);
+    console.log(data)
     setClients(data);
   };
 
