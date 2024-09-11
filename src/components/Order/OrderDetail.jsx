@@ -10,6 +10,7 @@ import GenericTable from "../GenericTable";
 import MaterialForm from "./MaterialForm";
 import { CertificateOfMaterialsService } from "../../service/certificateOfMaterials";
 import { SupplierNoteSerive } from "../../service/supplierNote";
+import { DeliveryNoteService } from "../../service/deliveryNote";
 
 function OrderDetail() {
   const location = useLocation();
@@ -20,6 +21,7 @@ function OrderDetail() {
   const [isUploading, setIsUploading] = useState(false);
   const [showUploadModal, setshowUploadModal] = useState(false);
   const [fileType, setFileType] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
   const fields = [
     'description',
     'quantity',
@@ -65,6 +67,8 @@ function OrderDetail() {
         await CertificateOfMaterialsService.newCertificate(formData)
       } else if (fileType === 'supplierNote') {
         await SupplierNoteSerive.newSupplierNote(formData)
+      } else if (fileType === 'deliveryNote') {
+        await DeliveryNoteService.upload(formData);
       }
     } catch (error) {
       console.error("Error subiendo el archivo:", error);
@@ -76,10 +80,13 @@ function OrderDetail() {
 
   const generateWorkOrder = async () => {
     try {
-      await OrderService.generateWorkOrder(detail)
+      setIsGenerating(true);
+      await OrderService.generateWorkOrder(detail);
       fetchOrder();
     } catch (error) {
-      console.log(error)
+      console.log(error);
+    } finally {
+      setIsGenerating(false);
     }
   }
   const handleCloseMaterialModal = () => {
@@ -138,7 +145,7 @@ function OrderDetail() {
             />
           )}
           <div style={styles.drawingsContainer}>
-          <hr />
+            <hr />
             <div style={styles.headerContainer}>
               <h3 style={styles.sectionTitle}>Remitos del proveedor</h3>
               <Button style={styles.newDrawButton} onClick={() => { setFileType('supplierNote'); setshowUploadModal(true); }}>Cargar remito</Button>
@@ -147,7 +154,7 @@ function OrderDetail() {
             {detail.supplier_delivery_notes && detail.supplier_delivery_notes.length > 0 && (
               detail.supplier_delivery_notes.map((supplier_note) => (
                 <div key={supplier_note.id} style={styles.drawingItem}>
-                   <FaImage style={styles.iconImage} />
+                  <FaImage style={styles.iconImage} />
                   <a href={supplier_note.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
                     {supplier_note.name}
                   </a>
@@ -157,7 +164,7 @@ function OrderDetail() {
           </div>
 
           <div style={styles.drawingsContainer}>
-          <hr />
+            <hr />
             <div style={styles.headerContainer}>
               <h3 style={styles.sectionTitle}>Certificado de matetiales</h3>
               <Button style={styles.newDrawButton} onClick={() => { setFileType('certificate'); setshowUploadModal(true); }}>Cargar certificado</Button>
@@ -166,7 +173,7 @@ function OrderDetail() {
             {detail.certificate_of_materials && detail.certificate_of_materials.length > 0 && (
               detail.certificate_of_materials.map((certificate) => (
                 <div key={certificate.id} style={styles.drawingItem}>
-                   <FaImage style={styles.iconImage} />
+                  <FaImage style={styles.iconImage} />
                   <a href={certificate.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
                     {certificate.name}
                   </a>
@@ -174,11 +181,40 @@ function OrderDetail() {
               ))
             )}
           </div>
+
           <div style={styles.drawingsContainer}>
-          <hr />
+            <hr />
+            <div style={styles.headerContainer}>
+              <h3 style={styles.sectionTitle}>Remitos de salida</h3>
+              <Button style={styles.newDrawButton} onClick={() => { setFileType('deliveryNote'); setshowUploadModal(true); }}>Cargar remito</Button>
+            </div>
+
+            {detail.delivery_notes && detail.delivery_notes.length > 0 && (
+              detail.delivery_notes.map((deliveryNote) => (
+                <div key={deliveryNote.id} style={styles.drawingItem}>
+                  <FaImage style={styles.iconImage} />
+                  <a href={deliveryNote.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                    {deliveryNote.name}
+                  </a>
+                </div>
+              ))
+            )}
+          </div>
+          <div style={styles.drawingsContainer}>
+            <hr />
             <div style={styles.headerContainer}>
               <h3 style={styles.sectionTitle}>Orden de trabajo</h3>
-              <Button style={styles.newDrawButton} onClick={generateWorkOrder}>Generar orden</Button>
+              <Button style={{ ...styles.newDrawButton, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={generateWorkOrder} disabled={isGenerating}>
+                {isGenerating ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" style={{ marginRight: "8px" }}></span>
+                    <span>Generando</span>
+                  </>
+                ) : (
+                  "Generar orden"
+                )}
+              </Button>
+
             </div>
 
             {detail.work_order != null && (
