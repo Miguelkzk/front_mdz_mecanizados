@@ -42,6 +42,9 @@ function OrderDetail() {
 
   const formatDate = (dateString) => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    if (dateString == null){
+      return
+    }
     return new Date(dateString).toLocaleDateString('es-ES', options);
   };
 
@@ -104,7 +107,8 @@ function OrderDetail() {
             <DetailItem label="Nombre" value={detail.name} />
             <DetailItem label="Cantidad" value={detail.quantity} />
             <DetailItem label="Fecha de ingreso" value={formatDate(detail.ingresed_at)} />
-            <DetailItem label="Fecha de entrega" value={formatDate(detail.delivery_at)} />
+            <DetailItem label="Fecha de entrega pactada" value={formatDate(detail.estimated_delivery_date)} />
+            <DetailItem label="Fecha de entrega real" value={formatDate(detail.delivery_at)} />
             <DetailItem label="Precio unitario" value={detail.unit_price} />
             <DetailItem label="Observaciones" value={detail.comment} />
             <DetailItem label="Precio total" value={detail.total_price} />
@@ -135,7 +139,7 @@ function OrderDetail() {
         <div style={styles.materialsContainer}>
           <div style={styles.headerContainer}>
             <h3 style={styles.sectionTitle}>Materiales</h3>
-            <Button style={styles.newDrawButton} onClick={() => setMaterialFormModal(true)}>Agregar material</Button>
+            <Button style={styles.newDrawButton} onClick={() => setMaterialFormModal(true)}>Gestionar material</Button>
           </div>
           {detail.materials && detail.materials.length > 0 && (
             <GenericTable

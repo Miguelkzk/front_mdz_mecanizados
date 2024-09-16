@@ -31,6 +31,7 @@ function Orders() {
       clientName: clientName,
       orderName: orderName
     });
+    console.log(ordersData)
     setOrders(ordersData);
   };
 

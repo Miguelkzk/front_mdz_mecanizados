@@ -2,33 +2,56 @@ import { useEffect, useState } from "react";
 import { Button, Form, FormControl, Modal, ModalBody } from "react-bootstrap";
 import { SupplierService } from "../../service/Supplier";
 import { MaterialService } from "../../service/material";
+import { OrderService } from "../../service/Order";
+import GenericTable from "../GenericTable";
+import ConfirmModal from "../ConfirmModal";
 
 function MaterialForm({ show, handleClose, orderID }) {
   const [errors, setErrors] = useState({});
   const [supplierName, setSupplierName] = useState('');
   const [filteredSuppliers, setFilteredSuppliers] = useState([]);
+  const [materials, setMaterials] = useState([]);
+  const [isEdit, setIsEdit] = useState(false)
+  const [materialId, setMaterialId] = useState('');
+  const [materialName, setMaterialName] =useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [material, setMaterial] = useState({
     description: '',
     quantity: '',
     supplier_note: '',
     ingresed_at: '',
     order_id: '',
-    supplier_id: ''
+    supplier_id: '',
   });
+
+  const fields = [
+    'description',
+    'quantity',
+    'supplier_name',
+    'ingresed_at',
+    'supplier_note'
+  ];
 
   const handleCloseModal = () => {
     handleClose();
+    clearForm();
+
+  };
+
+  const clearForm = () => {
     setMaterial({
       description: '',
       quantity: '',
       supplier_note: '',
       ingresed_at: '',
       order_id: '',
-      supplier_id: ''
+      supplier_id: '',
     })
     setFilteredSuppliers([]);
     setSupplierName('');
-  };
+    setIsEdit(false);
+    setMaterialId('');
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -74,108 +97,202 @@ function MaterialForm({ show, handleClose, orderID }) {
 
   const fetchSuppliers = async () => {
     const callSuppliers = await SupplierService.getSuppliers(supplierName);
-    setFilteredSuppliers(callSuppliers); // Filtra la lista conforme el usuario escribe
+    setFilteredSuppliers(callSuppliers);
   };
 
   const handleSave = async () => {
     if (validateForm()) {
       try {
         console.log(material)
-        await MaterialService.newMaterial(material)
-        handleCloseModal();
+        if (isEdit == true){
+          await MaterialService.editMaterial(material, materialId)
+        } else {
+          await MaterialService.newMaterial(material)
+        }
+        fetchMaterials();
+        clearForm();
       } catch (error) {
         console.log(error)
       }
     }
   }
+
+  useEffect(() => {
+    if (orderID) {
+      fetchMaterials();
+    }
+  }, [orderID]);
+
+  const fetchMaterials = async () => {
+    try {
+      console.log(orderID);
+      if (orderID) {
+        const materialsData = await OrderService.getMaterials(orderID);
+        console.log(materialsData);
+        setMaterials(materialsData);
+      }
+    } catch (error) {
+      console.log("Error fetching materials:", error);
+    }
+  };
+
+  const editMaterial = (element) => {
+    setMaterialId(element.id);
+    let ingresed_DMA = element.ingresed_at;
+    const [day, month, year] = ingresed_DMA.split('/');
+    const ingresed_at_AMD = `${year}-${month}-${day}`;
+    setMaterial({
+      description: element.description,
+      quantity: element.quantity,
+      supplier_note: element.supplier_note,
+      ingresed_at: ingresed_at_AMD,
+      order_id: element.order_id,
+      supplier_id: element.supplier_id,
+    });
+
+    setTimeout(() => {
+      setFilteredSuppliers([]);
+    }, 100);
+
+    setSupplierName(element.supplier_name);
+    setIsEdit(true);
+  };
+
+  const deleteMaterial = (element)=> {
+    setMaterialId(element.id)
+    setMaterialName(element.description)
+    setShowDeleteModal(true)
+
+  }
+
+  const handleCloseConfirmModal = () => {
+    setShowDeleteModal(false)
+    setMaterialId('')
+    setMaterialName('')
+  }
+
+  const handleConfirmDelete = async () => {
+    try {
+      await MaterialService.deleteMaterial(materialId);
+      fetchMaterials();
+      handleCloseConfirmModal();
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
-    <Modal show={show} onHide={handleCloseModal}>
+    <Modal show={show} onHide={handleCloseModal} className="modal-lg">
       <Modal.Header closeButton className="text-center">
         <Modal.Title style={{ textAlign: 'center', width: '100%' }}>Ingreso de material</Modal.Title>
       </Modal.Header>
       <ModalBody>
-        <Form>
-          <Form.Group className="mt-2">
-            <Form.Label>Descripcion</Form.Label>
-            <FormControl
-              type="text"
-              placeholder="Ingrese la descripción del material"
-              name="description"
-              value={material.description}
-              onChange={handleInputChange}
-              isInvalid={!!errors.description}
-            />
-            {errors.description && <Form.Text className="text-danger">{errors.description}</Form.Text>}
-          </Form.Group>
+        <div style={{ display: 'flex', height: '100%' }}>
+          <div style={{ flex: 1, paddingRight: '20px', borderRight: '1px solid #ddd' }}>
+            <Form>
+              <Form.Group className="mt-2">
+                <Form.Label>Proveedor</Form.Label>
+                <FormControl
+                  type="text"
+                  placeholder="Ingrese el nombre del proveedor"
+                  value={supplierName}
+                  onChange={(e) => setSupplierName(e.target.value)}
+                  isInvalid={!!errors.supplier_id}
+                />
+                {errors.supplier_id && <Form.Text className="text-danger">{errors.supplier_id}</Form.Text>}
 
-          <Form.Group className="mt-2">
-            <Form.Label>Cantidad</Form.Label>
-            <FormControl
-              type="number"
-              placeholder="Ingrese la cantidad del material"
-              name="quantity"
-              suppliervalue={material.quantity}
-              onChange={handleInputChange}
-              isInvalid={!!errors.quantity}
-              min="0"
-            />
-            {errors.quantity && <Form.Text className="text-danger">{errors.quantity}</Form.Text>}
-          </Form.Group>
+                {filteredSuppliers.length > 0 && (
+                  <ul style={{ maxHeight: '150px', overflowY: 'auto', backgroundColor: 'white', border: '1px solid #ced4da' }}>
+                    {filteredSuppliers.map((supplier) => (
+                      <li
+                        key={supplier.id}
+                        style={{ padding: '5px', cursor: 'pointer' }}
+                        onClick={() => handleSupplierSelect(supplier)}
+                      >
+                        {supplier.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Form.Group>
+              <Form.Group className="mt-2">
+                <Form.Label>Descripcion</Form.Label>
+                <FormControl
+                  type="text"
+                  placeholder="Ingrese la descripción del material"
+                  name="description"
+                  value={material.description}
+                  onChange={handleInputChange}
+                  isInvalid={!!errors.description}
+                />
+                {errors.description && <Form.Text className="text-danger">{errors.description}</Form.Text>}
+              </Form.Group>
 
-          <Form.Group className="mt-2">
-            <Form.Label>Remito del proveedor</Form.Label>
-            <FormControl
-              type="text"
-              placeholder="Ingrese el n­úmero de remito"
-              name="supplier_note"
-              value={material.supplier_note}
-              onChange={handleInputChange}
-              isInvalid={!!errors.description}
-            />
-            {errors.description && <Form.Text className="text-danger">{errors.description}</Form.Text>}
-          </Form.Group>
+              <Form.Group className="mt-2">
+                <Form.Label>Cantidad</Form.Label>
+                <FormControl
+                  type="number"
+                  placeholder="Ingrese la cantidad del material"
+                  name="quantity"
+                  value={material.quantity}
+                  onChange={handleInputChange}
+                  isInvalid={!!errors.quantity}
+                  min="0"
+                />
+                {errors.quantity && <Form.Text className="text-danger">{errors.quantity}</Form.Text>}
+              </Form.Group>
+            </Form>
+          </div>
+          <div style={{ flex: 1, paddingLeft: '20px' }}>
+            <Form>
+              <Form.Group className="mt-2">
+                <Form.Label>Remito del proveedor</Form.Label>
+                <FormControl
+                  type="text"
+                  placeholder="Ingrese el n­úmero de remito"
+                  name="supplier_note"
+                  value={material.supplier_note}
+                  onChange={handleInputChange}
+                  isInvalid={!!errors.description}
+                />
+                {errors.description && <Form.Text className="text-danger">{errors.description}</Form.Text>}
+              </Form.Group>
 
-          <Form.Group className="mt-2">
-            <Form.Label>Fecha de ingreso</Form.Label>
-            <Form.Control
-              type="date"
-              name="ingresed_at"
-              value={material.ingresed_at}
-              onChange={handleInputChange}
-              isInvalid={!!errors.ingresed_at}
-            />
-            {errors.ingresed_at && <Form.Text className="text-danger">{errors.ingresed_at}</Form.Text>}
-          </Form.Group>
-
-          <Form.Group className="mt-2">
-            <Form.Label>Proveedor</Form.Label>
-            <FormControl
-              type="text"
-              placeholder="Ingrese el nombre del proveedor"
-              value={supplierName}
-              onChange={(e) => setSupplierName(e.target.value)}
-              isInvalid={!!errors.supplier_id}
-            />
-            {errors.supplier_id && <Form.Text className="text-danger">{errors.supplier_id}</Form.Text>}
-
-            {filteredSuppliers.length > 0 && (
-              <ul style={{ maxHeight: '150px', overflowY: 'auto', backgroundColor: 'white', border: '1px solid #ced4da', }}>
-                {filteredSuppliers.map((supplier) => (
-                  <li
-                    key={supplier.id}
-                    style={{ padding: '5px', cursor: 'pointer' }}
-                    onClick={() => handleSupplierSelect(supplier)}
-                  >
-                    {supplier.name}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Form.Group>
-        </Form>
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2%' }}>
-          <Button onClick={handleSave}>Agregar material</Button>
+              <Form.Group className="mt-2">
+                <Form.Label>Fecha de ingreso</Form.Label>
+                <Form.Control
+                  type="date"
+                  name="ingresed_at"
+                  value={material.ingresed_at}
+                  onChange={handleInputChange}
+                  isInvalid={!!errors.ingresed_at}
+                />
+                {errors.ingresed_at && <Form.Text className="text-danger">{errors.ingresed_at}</Form.Text>}
+              </Form.Group>
+            </Form>
+          </div>
         </div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2%' }}>
+          <Button onClick={handleSave}>Guardar material</Button>
+        </div>
+        <hr />
+        <GenericTable
+        fields={fields}
+        elements={materials}
+        editButton={true}
+        deleteButton={true}
+        editElement={editMaterial}
+        deleteElement={deleteMaterial}
+        />
+
+        <ConfirmModal
+        show={showDeleteModal}
+        handleClose={handleCloseConfirmModal}
+        title={'Confirmar eliminación'}
+        content={`¿Seguro que desea eliminar el material ${materialName} ?`}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCloseConfirmModal}
+
+      />
       </ModalBody>
     </Modal>
   );

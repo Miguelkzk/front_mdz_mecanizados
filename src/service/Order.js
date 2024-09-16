@@ -12,6 +12,11 @@ export const OrderService = {
     const data = await response.json();
     return data;
   },
+  getMaterials: async (orderID) => {
+    const response = await fetch(`${BASE_URL}/orders/${orderID}/materials_in_order`);
+    const data = await response.json();
+    return data;
+  },
   newOrder: async (order) => {
     const response = await fetch(`${BASE_URL}/orders/`,
     {

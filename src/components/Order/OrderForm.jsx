@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, Form, FormControl, Modal, ModalBody, ModalTitle } from "react-bootstrap";
 import { ClientService } from "../../service/Client";
 import InfoModal from "../infoModal";
+import { OrderService } from "../../service/Order";
 
 function OrderForm({ show, handleClose }) {
   const [errors, setErrors] = useState({});
@@ -13,7 +14,7 @@ function OrderForm({ show, handleClose }) {
     purchase_order: '',
     quantity: '',
     ingresed_at: '',
-    delivery_at: '',
+    estimated_delivery_date: '',
     unit_price: '',
     comment: '',
     currency: '',
@@ -27,7 +28,7 @@ function OrderForm({ show, handleClose }) {
       purchase_order: '',
       quantity: '',
       ingresed_at: '',
-      delivery_at: '',
+      estimated_delivery_date: '',
       unit_price: '',
       comment: '',
       currency: '',
@@ -50,15 +51,15 @@ function OrderForm({ show, handleClose }) {
     if (!order.purchase_order) formErrors.purchase_order = "La orden de compra es requerida";
     if (!order.quantity || order.quantity <= 0) formErrors.quantity = "La cantidad debe ser mayor que 0";
     if (!order.ingresed_at) formErrors.ingresed_at = "La fecha de ingreso es requerida";
-    if (!order.delivery_at) formErrors.delivery_at = "La fecha de entrega es requerida";
+    if (!order.estimated_delivery_date) formErrors.estimated_delivery_date = "La fecha de entrega es requerida";
     if (!order.unit_price || order.unit_price <= 0) formErrors.unit_price = "El precio unitario debe ser mayor que 0";
     if (!order.currency) formErrors.currency = "Debe seleccionar un tipo de moneda";
 
     const ingresedAtDate = new Date(order.ingresed_at);
-    const deliveryAtDate = new Date(order.delivery_at);
+    const deliveryAtDate = new Date(order.estimated_delivery_date);
 
     if (deliveryAtDate <= ingresedAtDate) {
-        formErrors.delivery_at = "La fecha de entrega debe ser posterior a la fecha de ingreso";
+        formErrors.estimated_delivery_date = "La fecha de entrega debe ser posterior a la fecha de ingreso";
     }
 
     setErrors(formErrors);
@@ -218,15 +219,15 @@ function OrderForm({ show, handleClose }) {
               </Form.Group>
 
               <Form.Group className="mt-2">
-                <Form.Label>Fecha de entrega</Form.Label>
+                <Form.Label>Fecha de entrega pactada</Form.Label>
                 <Form.Control
                   type="date"
-                  name="delivery_at"
-                  value={order.delivery_at}
+                  name="estimated_delivery_date"
+                  value={order.estimated_delivery_date}
                   onChange={handleInputChange}
-                  isInvalid={!!errors.delivery_at}
+                  isInvalid={!!errors.estimated_delivery_date}
                 />
-                {errors.delivery_at && <Form.Text className="text-danger">{errors.delivery_at}</Form.Text>}
+                {errors.estimated_delivery_date && <Form.Text className="text-danger">{errors.estimated_delivery_date}</Form.Text>}
               </Form.Group>
 
               <Form.Group className="mt-2">
