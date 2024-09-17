@@ -4,23 +4,22 @@ import { ClientService } from "../../service/Client";
 import InfoModal from "../infoModal";
 import { OrderService } from "../../service/Order";
 
-function OrderForm({ show, handleClose }) {
+function OrderForm({ show, handleClose, editOrder, title, nameClient}) {
   const [errors, setErrors] = useState({});
   const [showinfoModal,setshowinfoModal] = useState(false)
   const [clientName,setClientName] = useState('');
   const [filteredClients, setFilteredClients] = useState([]);
   const [order, setOrder] = useState({
-    name: '',
+    name: '' ,
     purchase_order: '',
     quantity: '',
     ingresed_at: '',
     estimated_delivery_date: '',
     unit_price: '',
-    comment: '',
+    comment: '' ,
     currency: '',
     state: 'incomplete'
   });
-
   const handleCloseModal = () => {
     handleClose();
     setOrder({
@@ -43,6 +42,17 @@ function OrderForm({ show, handleClose }) {
   const handleCloseInfoModal = () => {
     setshowinfoModal(false)
   }
+
+  useEffect(() => {
+    if (editOrder) {
+      setOrder(editOrder);
+      setClientName(nameClient);
+      setTimeout(() => {
+        setFilteredClients([]);
+      }, 100);
+    }
+  }, [editOrder]);
+
 
   const validateForm = () => {
     let formErrors = {};
@@ -77,10 +87,14 @@ function OrderForm({ show, handleClose }) {
   const handleSave = async () => {
     if (validateForm()) {
         try {
-          console.log(order)
-          await OrderService.newOrder(order);
+          if(editOrder){
+            //hacer el metodo en el controlador
+          }
+          else{
+            setshowinfoModal(true);
+            await OrderService.newOrder(order);
+          }
           handleCloseModal();
-          setshowinfoModal(true);
         } catch (error) {
           console.log(error)
         }
@@ -115,7 +129,7 @@ function OrderForm({ show, handleClose }) {
   return (<>
     <Modal show={show} onHide={handleCloseModal} className="modal-lg">
       <Modal.Header closeButton className="text-center">
-        <Modal.Title style={{textAlign:'center', width: '100%'}}>Nueva orden</Modal.Title>
+        <Modal.Title style={{textAlign:'center', width: '100%'}}> {title} </Modal.Title>
       </Modal.Header>
       <ModalBody>
         <div style={{ display: 'flex', height: '100%' }}>

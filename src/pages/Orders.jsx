@@ -111,6 +111,8 @@ function Orders() {
       <OrderForm
         show={showForm}
         handleClose={handleCloseModal}
+        title={'Nueva orden'}
+        editOrder={''}
       />
     </div>
   );

@@ -11,6 +11,8 @@ import MaterialForm from "./MaterialForm";
 import { CertificateOfMaterialsService } from "../../service/certificateOfMaterials";
 import { SupplierNoteSerive } from "../../service/supplierNote";
 import { DeliveryNoteService } from "../../service/deliveryNote";
+import EditButton2 from "../Buttons/EditButton2";
+import OrderForm from "./OrderForm";
 
 function OrderDetail() {
   const location = useLocation();
@@ -20,7 +22,10 @@ function OrderDetail() {
   const { t } = useTranslation();
   const [isUploading, setIsUploading] = useState(false);
   const [showUploadModal, setshowUploadModal] = useState(false);
+  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [editOrder, setEditOrder] = useState('');
   const [fileType, setFileType] = useState('');
+  const [clientName, setClientName] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const fields = [
     'description',
@@ -28,7 +33,6 @@ function OrderDetail() {
     'supplier_name',
     'ingresed_at',
     'supplier_note'
-
   ];
 
   useEffect(() => {
@@ -48,6 +52,17 @@ function OrderDetail() {
     return new Date(dateString).toLocaleDateString('es-ES', options);
   };
 
+  const dateFormat = (dateString) => {
+    if (dateString == null){
+      return
+    }
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
   const handleCloseUploadModal = () => {
     setshowUploadModal(false);
     fetchOrder();
@@ -96,11 +111,47 @@ function OrderDetail() {
     setMaterialFormModal(false);
     fetchOrder();
   }
+  const handleEditOrder = ()=> {
+    setEditOrder({
+      name: detail.name,
+      purchase_order: detail.purchase_order,
+      quantity: detail.quantity,
+      ingresed_at: dateFormat(detail.ingresed_at),
+      estimated_delivery_date: dateFormat(detail.estimated_delivery_date),
+      unit_price: detail.unit_price,
+      comment: detail.comment,
+      currency: detail.currency,
+      state: detail.state,
+      client_id: detail.client_id
+    })
+    setClientName(detail.client)
+    setShowOrderForm(true)
+  }
+
+  const handleCloseOrderForm = ()=> {
+    setShowOrderForm(false)
+    setEditOrder({
+      name: '',
+      purchase_order: '',
+      quantity: '',
+      ingresed_at: '',
+      estimated_delivery_date: '',
+      unit_price: '',
+      comment:'',
+      currency: '',
+      state: '',
+      client_id: '',
+    })
+    setClientName('')
+  }
   return (
     <>
       <div style={styles.wrapper}>
         <div style={styles.container}>
-          <h2 style={styles.title}>Detalle de la Orden</h2>
+          <div style={{display: 'flex', justifyContent:'space-between',alignItems:'center', height:'10%' }}>
+            <h2 style={styles.title}>Detalle de la Orden</h2>
+            <EditButton2 onClick={handleEditOrder}/>
+          </div>
           <div style={styles.detailContainer}>
             <DetailItem label="Cliente" value={detail.client} />
             <DetailItem label="Orden de compra" value={detail.purchase_order} />
@@ -244,6 +295,14 @@ function OrderDetail() {
         show={materialFormModal}
         handleClose={handleCloseMaterialModal}
         orderID={detail.id}
+      />
+
+      <OrderForm
+        show={showOrderForm}
+        handleClose={handleCloseOrderForm}
+        title={'Editar orden'}
+        editOrder={editOrder}
+        nameClient={clientName}
       />
     </>
   );
