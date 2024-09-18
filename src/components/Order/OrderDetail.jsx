@@ -1,9 +1,9 @@
-import { useLocation } from "react-router-dom";
+import { Form, useLocation } from "react-router-dom";
 import { OrderService } from "../../service/Order";
 import { useEffect, useState } from "react";
 import { FaFileExcel, FaFilePdf, FaImage } from 'react-icons/fa';
 import { useTranslation } from "react-i18next";
-import { Button } from "react-bootstrap";
+import { Button, FormSelect } from "react-bootstrap";
 import UploadForm from "../uploadForm";
 import { DrawingsService } from "../../service/drawings";
 import GenericTable from "../GenericTable";
@@ -13,6 +13,7 @@ import { SupplierNoteSerive } from "../../service/supplierNote";
 import { DeliveryNoteService } from "../../service/deliveryNote";
 import EditButton2 from "../Buttons/EditButton2";
 import OrderForm from "./OrderForm";
+import Notification from "../notification";
 
 function OrderDetail() {
   const location = useLocation();
@@ -25,7 +26,9 @@ function OrderDetail() {
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [editOrder, setEditOrder] = useState('');
   const [fileType, setFileType] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState('');
   const [clientName, setClientName] = useState('');
+  const [notification, setNotification] = useState({ show: false, message: '' });
   const [isGenerating, setIsGenerating] = useState(false);
   const fields = [
     'description',
@@ -46,14 +49,14 @@ function OrderDetail() {
 
   const formatDate = (dateString) => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-    if (dateString == null){
+    if (dateString == null) {
       return
     }
     return new Date(dateString).toLocaleDateString('es-ES', options);
   };
 
   const dateFormat = (dateString) => {
-    if (dateString == null){
+    if (dateString == null) {
       return
     }
     const date = new Date(dateString);
@@ -111,7 +114,7 @@ function OrderDetail() {
     setMaterialFormModal(false);
     fetchOrder();
   }
-  const handleEditOrder = ()=> {
+  const handleEditOrder = () => {
     setEditOrder({
       name: detail.name,
       purchase_order: detail.purchase_order,
@@ -124,11 +127,12 @@ function OrderDetail() {
       state: detail.state,
       client_id: detail.client_id
     })
-    setClientName(detail.client)
-    setShowOrderForm(true)
+    setSelectedOrder(detail.id);
+    setClientName(detail.client);
+    setShowOrderForm(true);
   }
 
-  const handleCloseOrderForm = ()=> {
+  const handleCloseOrderForm = () => {
     setShowOrderForm(false)
     setEditOrder({
       name: '',
@@ -137,21 +141,53 @@ function OrderDetail() {
       ingresed_at: '',
       estimated_delivery_date: '',
       unit_price: '',
-      comment:'',
+      comment: '',
       currency: '',
       state: '',
       client_id: '',
     })
-    setClientName('')
+    setSelectedOrder('');
+    setClientName('');
+    fetchOrder();
   }
+  const handleChangeState = async (e) => {
+    let newState = { state: e.target.value };
+    try {
+      await OrderService.editOrder(newState, detail.id);
+      fetchOrder();
+      setNotification({ show: true, message: 'Estado actualizado correctamente.' });
+    } catch (error) {
+      console.error('Error al cambiar el estado:', error);
+      setNotification({ show: true, message: 'Error al actualizar el estado.' });
+    }
+  }
+  const handleCloseNotification = () => {
+    setNotification({ show: false, message: '' });
+  };
   return (
     <>
       <div style={styles.wrapper}>
         <div style={styles.container}>
-          <div style={{display: 'flex', justifyContent:'space-between',alignItems:'center', height:'10%' }}>
-            <h2 style={styles.title}>Detalle de la Orden</h2>
-            <EditButton2 onClick={handleEditOrder}/>
+          <h2 style={styles.title}>Detalle de la Orden</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '10%' }}>
+            <div  style={{ display: 'flex', alignItems: 'center', width: '70%' }}>
+              <label style={{ marginRight: '10px' }} >Cambiar de estado:</label>
+              <FormSelect value={detail.state} onChange={handleChangeState} style={{ width: '60%' }}>
+                <option value="without_material">Sin material</option>
+                <option value="with_material_but_not_started">Con material, pero no iniciado</option>
+                <option value="in_progress">En progreso</option>
+                <option value="not_invoiced">No facturado</option>
+                <option value="delivered_and_invoiced">Entregado y facturado</option>
+                <option value="incomplete">Incompleto</option>
+              </FormSelect>
+            </div>
+            <EditButton2 onClick={handleEditOrder} />
           </div>
+          <Notification
+            show={notification.show}
+            message={notification.message}
+            onClose={handleCloseNotification}
+          />
           <div style={styles.detailContainer}>
             <DetailItem label="Cliente" value={detail.client} />
             <DetailItem label="Orden de compra" value={detail.purchase_order} />
@@ -303,6 +339,7 @@ function OrderDetail() {
         title={'Editar orden'}
         editOrder={editOrder}
         nameClient={clientName}
+        orderSelected={selectedOrder}
       />
     </>
   );

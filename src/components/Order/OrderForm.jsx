@@ -3,20 +3,22 @@ import { Button, Form, FormControl, Modal, ModalBody, ModalTitle } from "react-b
 import { ClientService } from "../../service/Client";
 import InfoModal from "../infoModal";
 import { OrderService } from "../../service/Order";
+import Notification from "../notification";
 
-function OrderForm({ show, handleClose, editOrder, title, nameClient}) {
+function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelected }) {
   const [errors, setErrors] = useState({});
-  const [showinfoModal,setshowinfoModal] = useState(false)
-  const [clientName,setClientName] = useState('');
+  const [clientName, setClientName] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState();
   const [filteredClients, setFilteredClients] = useState([]);
+  const [notification, setNotification] = useState({ show: false, message: '' });
   const [order, setOrder] = useState({
-    name: '' ,
+    name: '',
     purchase_order: '',
     quantity: '',
     ingresed_at: '',
     estimated_delivery_date: '',
     unit_price: '',
-    comment: '' ,
+    comment: '',
     currency: '',
     state: 'incomplete'
   });
@@ -39,13 +41,13 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient}) {
     setFilteredClients([]);
   };
 
-  const handleCloseInfoModal = () => {
-    setshowinfoModal(false)
-  }
-
   useEffect(() => {
     if (editOrder) {
-      setOrder(editOrder);
+      setOrder({
+        ...editOrder,
+        comment: editOrder.comment || ''
+      });
+      setSelectedOrder(orderSelected);
       setClientName(nameClient);
       setTimeout(() => {
         setFilteredClients([]);
@@ -53,10 +55,9 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient}) {
     }
   }, [editOrder]);
 
-
   const validateForm = () => {
     let formErrors = {};
-    if(!order.client_id) formErrors.client = "Debe seleccionar un cliente";
+    if (!order.client_id) formErrors.client = "Debe seleccionar un cliente";
     if (!order.name) formErrors.name = "El nombre es requerido";
     if (!order.purchase_order) formErrors.purchase_order = "La orden de compra es requerida";
     if (!order.quantity || order.quantity <= 0) formErrors.quantity = "La cantidad debe ser mayor que 0";
@@ -69,7 +70,7 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient}) {
     const deliveryAtDate = new Date(order.estimated_delivery_date);
 
     if (deliveryAtDate <= ingresedAtDate) {
-        formErrors.estimated_delivery_date = "La fecha de entrega debe ser posterior a la fecha de ingreso";
+      formErrors.estimated_delivery_date = "La fecha de entrega debe ser posterior a la fecha de ingreso";
     }
 
     setErrors(formErrors);
@@ -86,18 +87,18 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient}) {
 
   const handleSave = async () => {
     if (validateForm()) {
-        try {
-          if(editOrder){
-            //hacer el metodo en el controlador
-          }
-          else{
-            setshowinfoModal(true);
-            await OrderService.newOrder(order);
-          }
-          handleCloseModal();
-        } catch (error) {
-          console.log(error)
+      try {
+        if (editOrder) {
+          await OrderService.editOrder(order, selectedOrder);
         }
+        else {
+          await OrderService.newOrder(order);
+          setNotification({ show: true, message: 'Se ha creado una nueva orden.' });
+        }
+        handleCloseModal();
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 
@@ -126,40 +127,44 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient}) {
     setFilteredClients(callClients); // Filtra la lista conforme el usuario escribe
   };
 
+  const handleCloseNotification = () => {
+    setNotification({ show: false, message: '' });
+  };
+
   return (<>
     <Modal show={show} onHide={handleCloseModal} className="modal-lg">
       <Modal.Header closeButton className="text-center">
-        <Modal.Title style={{textAlign:'center', width: '100%'}}> {title} </Modal.Title>
+        <Modal.Title style={{ textAlign: 'center', width: '100%' }}> {title} </Modal.Title>
       </Modal.Header>
       <ModalBody>
         <div style={{ display: 'flex', height: '100%' }}>
           <div style={{ flex: 1, paddingRight: '20px', borderRight: '1px solid #ddd' }}>
             <Form>
-                <Form.Group style={{ flex: 1, marginRight: '10px' }}>
-                  <Form.Label>Buscar cliente</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={clientName}
-                    onChange={(e) => setClientName(e.target.value)}
-                    placeholder="Ingrese el nombre del cliente"
-                    isInvalid={!!errors.client}
-                  />
+              <Form.Group style={{ flex: 1, marginRight: '10px' }}>
+                <Form.Label>Buscar cliente</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                  placeholder="Ingrese el nombre del cliente"
+                  isInvalid={!!errors.client}
+                />
                 {errors.client_id && <Form.Text className="text-danger">{errors.client_id}</Form.Text>}
 
                 {filteredClients.length > 0 && (
-                  <ul style={{maxHeight: '150px', overflowY: 'auto', backgroundColor: 'white', border: '1px solid #ced4da'}}>
-                  {filteredClients.map((client) => (
-                    <li
-                      key={client.id}
-                      style={{ padding: '5px', cursor: 'pointer' }}
-                      onClick={()=> handleClientSelect(client)}
-                    >
-                      {client.name}
-                    </li>
-                  ))}
+                  <ul style={{ maxHeight: '150px', overflowY: 'auto', backgroundColor: 'white', border: '1px solid #ced4da' }}>
+                    {filteredClients.map((client) => (
+                      <li
+                        key={client.id}
+                        style={{ padding: '5px', cursor: 'pointer' }}
+                        onClick={() => handleClientSelect(client)}
+                      >
+                        {client.name}
+                      </li>
+                    ))}
                   </ul>
                 )}
-                </Form.Group>
+              </Form.Group>
 
               <Form.Group className="mt-2">
                 <Form.Label>Orden de compra</Form.Label>
@@ -168,7 +173,7 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient}) {
                   placeholder="Ingrese orden de compra"
                   name="purchase_order"
                   value={order.purchase_order}
-                  onChange={handleInputChange }
+                  onChange={handleInputChange}
                   isInvalid={!!errors.purchase_order}
                 />
                 {errors.purchase_order && <Form.Text className="text-danger">{errors.purchase_order}</Form.Text>}
@@ -280,12 +285,12 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient}) {
       </ModalBody>
     </Modal>
 
-    <InfoModal
-    show={showinfoModal}
-    handleClose={handleCloseInfoModal}
-    content={"Se ha creado una nueva orden"}
+    <Notification
+      show={notification.show}
+      message={notification.message}
+      onClose={handleCloseNotification}
     />
-    </>
+  </>
   );
 }
 

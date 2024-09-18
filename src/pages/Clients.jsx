@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import GenericTable from "../components/GenericTable";
 import { ClientService } from "../service/Client";
+import { Button } from "react-bootstrap";
+import NameForm from "../components/Name.form";
 
 function Clients() {
   const fields = ['name'];
   const [clients, setClients] = useState([]);
+  const [title, setTitle] = useState('');
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     fetchClients();
@@ -16,9 +20,26 @@ function Clients() {
     setClients(data);
   };
 
+  const handleOpenModal = ()=> {
+    setTitle('Nuevo cliente')
+    setShowForm(true);
+
+  }
+
+  const handleCloseModal = () => {
+    setShowForm(false);
+    setTitle('');
+  };
+
   return (
+    <>
     <div style={styles.container}>
-      <h2 style={styles.title}>Clientes</h2>
+      <div style={styles.headerContainer}>
+
+        <h2 style={styles.title}>Clientes</h2>
+        <Button style={styles.newClientButton} onClick={() => (handleOpenModal())}>Nuevo cliente</Button>
+      </div>
+
       <hr />
       <div style={styles.tableContainer}>
         <GenericTable
@@ -30,6 +51,13 @@ function Clients() {
         />
       </div>
     </div>
+    <NameForm
+    show = {showForm}
+    handleClose={handleCloseModal}
+    title={title}
+    />
+    </>
+
   );
 }
 
@@ -54,6 +82,22 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "10px",
+  },
+  newClientButton: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    marginBottom: '20px',
+    padding: '10px 20px',
+    fontSize: '16px',
+    flex: "1 1 100%", // Para pantallas pequeñas, el botón ocupará todo el ancho disponible
+  },
+  headerContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    flexWrap: 'wrap', // Para que el botón se mueva hacia abajo si el espacio es pequeño
   },
 };
 

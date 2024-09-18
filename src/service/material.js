@@ -15,7 +15,6 @@ export const MaterialService = {
   },
 
   editMaterial: async (material, materialID) => {
-    console.log(material);
 
     const response = await fetch(`${BASE_URL}/materials/${materialID}`, {
       method: "PUT",

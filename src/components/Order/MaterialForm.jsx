@@ -103,7 +103,6 @@ function MaterialForm({ show, handleClose, orderID }) {
   const handleSave = async () => {
     if (validateForm()) {
       try {
-        console.log(material)
         if (isEdit == true){
           await MaterialService.editMaterial(material, materialId)
         } else {
@@ -125,10 +124,8 @@ function MaterialForm({ show, handleClose, orderID }) {
 
   const fetchMaterials = async () => {
     try {
-      console.log(orderID);
       if (orderID) {
         const materialsData = await OrderService.getMaterials(orderID);
-        console.log(materialsData);
         setMaterials(materialsData);
       }
     } catch (error) {
