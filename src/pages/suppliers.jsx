@@ -1,42 +1,42 @@
-import { useEffect, useState } from "react";
-import GenericTable from "../components/GenericTable";
-import { ClientService } from "../service/Client";
+import { useEffect, useState } from "react"
+import { SupplierService } from "../service/Supplier";
 import { Button } from "react-bootstrap";
+import GenericTable from "../components/GenericTable";
 import NameForm from "../components/Name.form";
 
-function Clients() {
+function Suppliers(){
+  const [suppliers, setSuppliers] = useState([]);
+  const [supplier, setSupplier] = useState({});
   const fields = ['name'];
-  const [clients, setClients] = useState([]);
-  const [client, setClient] =useState({});
-  const [title, setTitle] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [title, setTitle] = useState('');
 
-  useEffect(() => {
-    fetchClients();
+
+  const fetchSuppliers = async () => {
+    const data  = await SupplierService.getSuppliers(name);
+    setSuppliers(data);
+  }
+
+  useEffect(()=>{
+    fetchSuppliers();
   }, []);
 
-  const fetchClients = async () => {
-    const data = await ClientService.getClients(name);
-    setClients(data);
-  };
-
-  const handleOpenModal = ()=> {
-    setTitle('Nuevo cliente')
+  const handleOpenModal = () => {
     setShowForm(true);
+    setTitle('Nuevo proveedor');
 
   }
 
-  const handleCloseModal = () => {
+  const handleCloseModal = () =>{
     setShowForm(false);
-    setTitle('');
-    fetchClients();
-    setClient(false);
-  };
+    fetchSuppliers();
+    setSupplier(false);
+  }
 
-  const editClient = (element) => {
-    setClient(element);
-    setTitle('Editar cliente');
-    setShowForm(true)
+  const editSupplier = (element) =>  {
+    setSupplier(element);
+    setShowForm(true);
+    setTitle('Editar proveedor');
   }
 
   return (
@@ -44,18 +44,18 @@ function Clients() {
     <div style={styles.container}>
       <div style={styles.headerContainer}>
 
-        <h2 style={styles.title}>Clientes</h2>
-        <Button style={styles.newClientButton} onClick={() => (handleOpenModal())}>Nuevo cliente</Button>
+        <h2 style={styles.title}>Proveedores</h2>
+        <Button style={styles.newClientButton} onClick={() => (handleOpenModal())}>Nuevo proveedor</Button>
       </div>
 
       <hr />
       <div style={styles.tableContainer}>
         <GenericTable
           fields={fields}
-          elements={clients}
+          elements={suppliers}
           viewButton={false}
           editButton={true}
-          editElement={editClient}
+          editElement={editSupplier}
         />
       </div>
     </div>
@@ -63,14 +63,13 @@ function Clients() {
     show = {showForm}
     handleClose={handleCloseModal}
     title={title}
-    type={'client'}
-    editElement={client}
+    type={'supplier'}
+    editElement = {supplier}
     />
     </>
 
   );
-}
-
+};
 const styles = {
   container: {
     maxWidth: "50%",
@@ -109,6 +108,5 @@ const styles = {
     position: 'relative',
     flexWrap: 'wrap', // Para que el botón se mueva hacia abajo si el espacio es pequeño
   },
-};
-
-export default Clients;
+}
+export default Suppliers;

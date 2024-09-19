@@ -5,5 +5,30 @@ export const SupplierService = {
     const response = await fetch(`${BASE_URL}/suppliers/?name=${name}`);
     const data = await response.json();
     return data;
-  }
+  },
+  newSupplier: async (name) => {
+    const response = await fetch(`${BASE_URL}/suppliers/`,
+      {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(name)
+      }
+    );
+    const data = await response.json();
+    return data;
+  },
+  editSupplier: async (body,supplierID ) => {
+    const response = await fetch(`${BASE_URL}/suppliers/${supplierID}`, {
+      method: "PUT",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+    return data;
+  },
 }

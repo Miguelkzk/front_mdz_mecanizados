@@ -58,6 +58,7 @@ function Orders() {
             value={filterState}
             onChange={(e) => setFilterState(e.target.value)}
           >
+            <option value="">Todos los estados</option>
             <option value="without_material">Sin material</option>
             <option value="with_material_but_not_started">Con material, pero no iniciado</option>
             <option value="in_progress">En progreso</option>

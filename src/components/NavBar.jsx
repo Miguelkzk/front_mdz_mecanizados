@@ -18,6 +18,8 @@ function NavBar() {
         <span style={{ marginLeft: '1%', cursor: 'pointer' }}>
           <Navbar.Brand onClick={() => navigate('/')} >{t('Órdenes')}</Navbar.Brand>
           <Navbar.Brand onClick={() => navigate('/clients')} >{t('Clientes')}</Navbar.Brand>
+          <Navbar.Brand onClick={() => navigate('/suppliers')} >{t('Proveedores')}</Navbar.Brand>
+
         </span>
       </Navbar>
     </>
