@@ -5,6 +5,7 @@ import { MaterialService } from "../../service/material";
 import { OrderService } from "../../service/Order";
 import GenericTable from "../GenericTable";
 import ConfirmModal from "../ConfirmModal";
+import NameForm from "../Name.form";
 
 function MaterialForm({ show, handleClose, orderID }) {
   const [errors, setErrors] = useState({});
@@ -13,8 +14,9 @@ function MaterialForm({ show, handleClose, orderID }) {
   const [materials, setMaterials] = useState([]);
   const [isEdit, setIsEdit] = useState(false)
   const [materialId, setMaterialId] = useState('');
-  const [materialName, setMaterialName] =useState('');
+  const [materialName, setMaterialName] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSupplierForm, setShowSupllierForm] = useState(false);
   const [material, setMaterial] = useState({
     description: '',
     quantity: '',
@@ -103,7 +105,7 @@ function MaterialForm({ show, handleClose, orderID }) {
   const handleSave = async () => {
     if (validateForm()) {
       try {
-        if (isEdit == true){
+        if (isEdit == true) {
           await MaterialService.editMaterial(material, materialId)
         } else {
           await MaterialService.newMaterial(material)
@@ -155,7 +157,7 @@ function MaterialForm({ show, handleClose, orderID }) {
     setIsEdit(true);
   };
 
-  const deleteMaterial = (element)=> {
+  const deleteMaterial = (element) => {
     setMaterialId(element.id)
     setMaterialName(element.description)
     setShowDeleteModal(true)
@@ -177,7 +179,13 @@ function MaterialForm({ show, handleClose, orderID }) {
       console.log(error)
     }
   }
+
+  const handleCloseSupplerModal = () => {
+    setShowSupllierForm(false);
+  }
+
   return (
+    <>
     <Modal show={show} onHide={handleCloseModal} className="modal-lg">
       <Modal.Header closeButton className="text-center">
         <Modal.Title style={{ textAlign: 'center', width: '100%' }}>Ingreso de material</Modal.Title>
@@ -211,6 +219,19 @@ function MaterialForm({ show, handleClose, orderID }) {
                   </ul>
                 )}
               </Form.Group>
+              <a
+                role="button"
+                onClick={()=> setShowSupllierForm(true)}
+                style={{
+                  textDecoration: 'underline',
+                  color: '#007bff',
+                  cursor: 'pointer',
+                }}
+              >
+                ¿Nuevo proveedor?
+              </a>
+
+
               <Form.Group className="mt-2">
                 <Form.Label>Descripcion</Form.Label>
                 <FormControl
@@ -273,25 +294,34 @@ function MaterialForm({ show, handleClose, orderID }) {
         </div>
         <hr />
         <GenericTable
-        fields={fields}
-        elements={materials}
-        editButton={true}
-        deleteButton={true}
-        editElement={editMaterial}
-        deleteElement={deleteMaterial}
+          fields={fields}
+          elements={materials}
+          editButton={true}
+          deleteButton={true}
+          editElement={editMaterial}
+          deleteElement={deleteMaterial}
         />
 
         <ConfirmModal
-        show={showDeleteModal}
-        handleClose={handleCloseConfirmModal}
-        title={'Confirmar eliminación'}
-        content={`¿Seguro que desea eliminar el material ${materialName} ?`}
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCloseConfirmModal}
+          show={showDeleteModal}
+          handleClose={handleCloseConfirmModal}
+          title={'Confirmar eliminación'}
+          content={`¿Seguro que desea eliminar el material ${materialName} ?`}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCloseConfirmModal}
 
-      />
+        />
+    <NameForm
+    show = {showSupplierForm}
+    handleClose={handleCloseSupplerModal}
+    title={'Nuevo proveedor'}
+    type={'supplier'}
+    />
       </ModalBody>
     </Modal>
+
+    </>
+
   );
 }
 

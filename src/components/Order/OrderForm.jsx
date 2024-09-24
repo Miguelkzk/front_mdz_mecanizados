@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Button, Form, FormControl, Modal, ModalBody, ModalTitle } from "react-bootstrap";
+import { Button, Form, FormControl, Modal, ModalBody, Spinner } from "react-bootstrap";
 import { ClientService } from "../../service/Client";
 import InfoModal from "../infoModal";
 import { OrderService } from "../../service/Order";
 import Notification from "../notification";
+import NameForm from "../Name.form";
 
 function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelected }) {
   const [errors, setErrors] = useState({});
@@ -11,6 +12,8 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelec
   const [selectedOrder, setSelectedOrder] = useState();
   const [filteredClients, setFilteredClients] = useState([]);
   const [notification, setNotification] = useState({ show: false, message: '' });
+  const [showClientForm, setShowClientForm] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [order, setOrder] = useState({
     name: '',
     purchase_order: '',
@@ -89,11 +92,16 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelec
     if (validateForm()) {
       try {
         if (editOrder) {
+          setIsUploading(true);
           await OrderService.editOrder(order, selectedOrder);
+          setIsUploading(false);
+
         }
         else {
+          setIsUploading(true);
           await OrderService.newOrder(order);
           setNotification({ show: true, message: 'Se ha creado una nueva orden.' });
+          setIsUploading(false);
         }
         handleCloseModal();
       } catch (error) {
@@ -131,6 +139,10 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelec
     setNotification({ show: false, message: '' });
   };
 
+  const handleCloseClientModal = () => {
+    setShowClientForm(false);
+  }
+
   return (<>
     <Modal show={show} onHide={handleCloseModal} className="modal-lg">
       <Modal.Header closeButton className="text-center">
@@ -165,6 +177,18 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelec
                   </ul>
                 )}
               </Form.Group>
+
+              <a
+                role="button"
+                onClick={() => setShowClientForm(true)}
+                style={{
+                  textDecoration: 'underline',
+                  color: '#007bff',
+                  cursor: 'pointer',
+                }}
+              >
+                ¿Nuevo cliente?
+              </a>
 
               <Form.Group className="mt-2">
                 <Form.Label>Orden de compra</Form.Label>
@@ -280,8 +304,30 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelec
         </div>
         <hr />
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2%' }}>
-          <Button onClick={handleSave}>Guardar orden</Button>
+          <Button onClick={handleSave} disabled={isUploading}>
+            {isUploading ? (
+              <>
+               <Spinner
+                    animation="border"
+                    size="sm"
+                    style={{marginTop: "8px"}}
+                  />{" "}
+                  Guardando...
+              </>
+            ) : (
+              'Guardar orden'
+            )}
+
+
+
+          </Button>
         </div>
+        <NameForm
+          show={showClientForm}
+          handleClose={handleCloseClientModal}
+          title={'Nuevo Cliente'}
+          type={'client'}
+        />
       </ModalBody>
     </Modal>
 
@@ -290,6 +336,7 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelec
       message={notification.message}
       onClose={handleCloseNotification}
     />
+
   </>
   );
 }

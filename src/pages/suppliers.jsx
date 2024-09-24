@@ -6,7 +6,7 @@ import NameForm from "../components/Name.form";
 
 function Suppliers(){
   const [suppliers, setSuppliers] = useState([]);
-  const [supplier, setSupplier] = useState({});
+  const [supplier, setSupplier] = useState(false);
   const fields = ['name'];
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');

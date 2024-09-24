@@ -7,7 +7,7 @@ import NameForm from "../components/Name.form";
 function Clients() {
   const fields = ['name'];
   const [clients, setClients] = useState([]);
-  const [client, setClient] =useState({});
+  const [client, setClient] =useState(false);
   const [title, setTitle] = useState('');
   const [showForm, setShowForm] = useState(false);
 

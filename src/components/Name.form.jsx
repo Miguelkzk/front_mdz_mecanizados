@@ -3,6 +3,7 @@ import { Button, Form, FormControl, Modal, ModalBody } from "react-bootstrap";
 import { ClientService } from "../service/Client";
 import { SupplierService } from "../service/Supplier";
 import Notification from "./notification";
+import "../components/styles.css"
 
 function NameForm({ show, handleClose, title, type, editElement }) {
   const [form, setForm] = useState({ name: '' });
@@ -72,7 +73,10 @@ function NameForm({ show, handleClose, title, type, editElement }) {
 
   return (
     <>
-      <Modal show={show} onHide={handleCloseModal}>
+      {show && <div className="global-backdrop" />}
+      <Modal show={show} onHide={handleCloseModal} centered
+        backdrop="static"
+        dialogClassName="modal-dialog-custom">
         <Modal.Header closeButton className="text-center">
           <Modal.Title style={{ textAlign: 'center', width: '100%' }}>{title}</Modal.Title>
         </Modal.Header>
@@ -98,10 +102,10 @@ function NameForm({ show, handleClose, title, type, editElement }) {
       </Modal>
 
       <Notification
-      show={notification.show}
-      message={notification.message}
-      onClose={handleCloseNotification}
-    />
+        show={notification.show}
+        message={notification.message}
+        onClose={handleCloseNotification}
+      />
 
     </>
   );

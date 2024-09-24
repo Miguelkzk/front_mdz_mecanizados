@@ -11,13 +11,12 @@ const Notification = ({ show, message, onClose }) => {
 
 const styles = {
   notification: {
-    position: 'absolute',
-    top: '2%',
-    right: '40%',
-    left: '40%',
+    position: 'fixed', // Cambiado a fixed
+    top: '2%', // Margen superior
+    left: '50%', // Centrado horizontalmente
+    transform: 'translateX(-50%)', // Ajuste para centrar
     zIndex: 1050,
-    width: '20%',
-    height: '10%',
+    width: '320px',
     backgroundColor: '#28a745',
     color: '#ffffff',
     fontSize: '20px',

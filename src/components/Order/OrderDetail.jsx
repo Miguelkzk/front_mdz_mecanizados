@@ -356,7 +356,7 @@ const styles = {
   wrapper: {
     display: "flex",
     justifyContent: "space-between",
-    maxWidth: "80%",
+    maxWidth: "90%",
     margin: "20px auto",
     gap: "20px",
     padding: "20px",
