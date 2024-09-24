@@ -11,8 +11,12 @@ function Orders() {
   const [purchaseOrder, setPurchaseOrder] = useState('');
   const [clientName, setClientName] = useState('');
   const [orderName, setOrderName] = useState('');
-  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [nextPage, setNextPage] = useState(null);
+  const [prevPage, setPrevPage] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const navigate = useNavigate();
   const fields = [
     'purchase_order',
     'client',
@@ -24,14 +28,19 @@ function Orders() {
     fetchOrders();
   }, [filterState, purchaseOrder, clientName, orderName]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (page = 1) => {
     const ordersData = await OrderService.getOrders({
       state: filterState,
       purchaseOrder: purchaseOrder,
       clientName: clientName,
-      orderName: orderName
+      orderName: orderName,
+      page: page
     });
-    setOrders(ordersData);
+    setOrders(ordersData.orders);
+    setCurrentPage(ordersData.current_page);
+    setTotalPages(ordersData.total_pages);
+    setNextPage(ordersData.next_page);
+    setPrevPage(ordersData.prev_page);
   };
 
   const viewDetail = (element) => {
@@ -113,6 +122,25 @@ function Orders() {
         title={'Nueva orden'}
         editOrder={''}
       />
+
+      <div style={styles.paginationContainer}>
+        <button type="button" class="btn btn-outline-primary"
+          onClick={() => fetchOrders(prevPage)}
+          disabled={!prevPage}
+        >
+          Anterior
+        </button>
+
+        <span>Página {currentPage} de {totalPages}</span>
+
+        <button type="button" class="btn btn-outline-primary"
+          onClick={() => fetchOrders(nextPage)}
+          disabled={!nextPage}
+        >
+          Siguiente
+        </button>
+
+      </div>
     </div>
   );
 }
@@ -185,6 +213,13 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "10px",
+  },
+  paginationContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '20px',
+    gap: '10px'
   },
 };
 
