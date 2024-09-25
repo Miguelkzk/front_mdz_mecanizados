@@ -14,6 +14,7 @@ import { DeliveryNoteService } from "../../service/deliveryNote";
 import EditButton2 from "../Buttons/EditButton2";
 import OrderForm from "./OrderForm";
 import Notification from "../notification";
+import ConfirmModal from "../ConfirmModal";
 
 function OrderDetail() {
   const location = useLocation();
@@ -30,6 +31,9 @@ function OrderDetail() {
   const [clientName, setClientName] = useState('');
   const [notification, setNotification] = useState({ show: false, message: '' });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [titleConfirmModal, setTitleConfirmModal] = useState('');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [contentConfirmModal, setContentConfirmModal] = useState('');
   const fields = [
     'description',
     'quantity',
@@ -164,6 +168,27 @@ function OrderDetail() {
   const handleCloseNotification = () => {
     setNotification({ show: false, message: '' });
   };
+
+  const handleCloseConfirmModal = () => {
+    setTitleConfirmModal('');
+    setContentConfirmModal('');
+    setShowConfirmModal(false);
+  }
+
+  const handleConfirmModalGenearte = () => {
+    generateWorkOrder();
+    handleCloseConfirmModal();
+  }
+
+  const handleWorkOrder = () => {
+    if (detail.work_order != null){
+      setShowConfirmModal(true)
+      setTitleConfirmModal('¿Regenerar orden?')
+      setContentConfirmModal('Al regenear una orden los cambios que haya realizado en al anterior se descartarán, ¿está seguro que desea continuar?')
+    } else{
+      generateWorkOrder()
+    }
+  }
   return (
     <>
       <div style={styles.wrapper}>
@@ -295,13 +320,16 @@ function OrderDetail() {
             <hr />
             <div style={styles.headerContainer}>
               <h3 style={styles.sectionTitle}>Orden de trabajo</h3>
-              <Button style={{ ...styles.newDrawButton, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={generateWorkOrder} disabled={isGenerating}>
+              <Button style={{ ...styles.newDrawButton, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={handleWorkOrder} disabled={isGenerating}>
                 {isGenerating ? (
                   <>
                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" style={{ marginRight: "8px" }}></span>
                     <span>Generando</span>
                   </>
-                ) : (
+                ) : detail.work_order != null ? (
+                  "Regenerar orden"
+                ): (
+
                   "Generar orden"
                 )}
               </Button>
@@ -341,6 +369,13 @@ function OrderDetail() {
         nameClient={clientName}
         orderSelected={selectedOrder}
       />
+
+      <ConfirmModal
+      show = {showConfirmModal}
+      title = {titleConfirmModal}
+      content = {contentConfirmModal}
+      onConfirm = {handleConfirmModalGenearte}
+      onCancel = {handleCloseConfirmModal}/>
     </>
   );
 }

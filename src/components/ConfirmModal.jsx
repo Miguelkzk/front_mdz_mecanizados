@@ -17,10 +17,10 @@ function ConfirmModal({ show, title, content, onConfirm, onCancel }) {
         </Modal.Header>
         <Modal.Body>{content}</Modal.Body>
         <Modal.Footer>
-          <Button onClick={onCancel}>
+          <Button variant="danger" onClick={onCancel}>
             Cancelar
           </Button>
-          <Button variant="danger" onClick={onConfirm}>
+          <Button onClick={onConfirm}>
             Confirmar
           </Button>
         </Modal.Footer>
