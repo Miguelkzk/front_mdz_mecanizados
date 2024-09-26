@@ -8,5 +8,14 @@ export const DrawingsService = {
     });
     const data = await response.json();
     return data;
-  }
+  },
+  delete: async (drawing) => {
+    const response = await fetch(`${BASE_URL}/drawings/${drawing.id}`,
+      {
+        method: "DELETE"
+      }
+    );
+    const data = await response.json();
+    return data;
+  },
 }

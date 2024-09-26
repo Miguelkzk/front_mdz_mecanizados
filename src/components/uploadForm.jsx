@@ -12,6 +12,7 @@ function UploadForm({ show, handleClose, handleSubmit }) {
   const handleCloseModal = () => {
     if (!isUploading) {
       handleClose();
+      setFile(null)
     }
   };
 
@@ -21,6 +22,7 @@ function UploadForm({ show, handleClose, handleSubmit }) {
       setIsUploading(true);
       await handleSubmit(file);
       setIsUploading(false);
+      setFile(null)
       handleClose();
     }
   };

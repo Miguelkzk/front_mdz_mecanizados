@@ -8,5 +8,14 @@ export const SupplierNoteSerive = {
     });
     const data = await response.json();
     return data;
-  }
+  },
+  deleteSupplierNote: async (SupplierNote) => {
+    const response = await fetch(`${BASE_URL}/supplier_delivery_notes/${SupplierNote.id}`,
+      {
+        method: "DELETE"
+      }
+    );
+    const data = await response.json();
+    return data;
+  },
 }

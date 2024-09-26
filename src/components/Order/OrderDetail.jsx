@@ -15,6 +15,8 @@ import EditButton2 from "../Buttons/EditButton2";
 import OrderForm from "./OrderForm";
 import Notification from "../notification";
 import ConfirmModal from "../ConfirmModal";
+import DeleteButton from "../Buttons/DeleteButton";
+import DeleteButton2 from "../Buttons/DeleteButton2";
 
 function OrderDetail() {
   const location = useLocation();
@@ -27,6 +29,7 @@ function OrderDetail() {
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [editOrder, setEditOrder] = useState('');
   const [fileType, setFileType] = useState('');
+  const [delteFile, setDeleteFile] = useState({});
   const [selectedOrder, setSelectedOrder] = useState('');
   const [clientName, setClientName] = useState('');
   const [notification, setNotification] = useState({ show: false, message: '' });
@@ -83,18 +86,25 @@ function OrderDetail() {
     formData.append("file", file);
     formData.append("order_id", detail.id);
     formData.append("parent_id", detail.drive_id);
+
     try {
       setIsUploading(true);
 
-      if (fileType === 'drawing') {
-        await DrawingsService.newDrawing(formData);
-      } else if (fileType === 'certificate') {
-        await CertificateOfMaterialsService.newCertificate(formData)
-      } else if (fileType === 'supplierNote') {
-        await SupplierNoteSerive.newSupplierNote(formData)
-      } else if (fileType === 'deliveryNote') {
-        await DeliveryNoteService.upload(formData);
+      switch (fileType) {
+        case 'drawing':
+          await DrawingsService.newDrawing(formData);
+          break;
+        case 'certificate':
+          await CertificateOfMaterialsService.newCertificate(formData)
+          break;
+        case 'supplierNote':
+          await SupplierNoteSerive.newSupplierNote(formData)
+          break;
+        case 'deliveryNote':
+          await DeliveryNoteService.upload(formData);
+          break;
       }
+
     } catch (error) {
       console.error("Error subiendo el archivo:", error);
     } finally {
@@ -173,21 +183,58 @@ function OrderDetail() {
     setTitleConfirmModal('');
     setContentConfirmModal('');
     setShowConfirmModal(false);
+    setFileType('');
+    setDeleteFile({});
   }
 
-  const handleConfirmModalGenearte = () => {
-    generateWorkOrder();
+  const handleConfirmModalGenearte = async () => {
+    try {
+      switch (fileType) {
+        case 'drawing':
+          await DrawingsService.delete(delteFile)
+          break;
+        case 'certificate':
+          console.log('certificado')
+          console.log(delteFile)
+          break;
+        case 'supplierNote':
+          await SupplierNoteSerive.deleteSupplierNote(delteFile)
+          console.log(delteFile)
+
+          break;
+        case 'deliveryNote':
+          await DeliveryNoteService.delete(delteFile)
+          break;
+        case 'workOrder':
+          generateWorkOrder();
+          break;
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
     handleCloseConfirmModal();
+    fetchOrder();
+
+
   }
 
   const handleWorkOrder = () => {
-    if (detail.work_order != null){
+    if (detail.work_order != null) {
       setShowConfirmModal(true)
       setTitleConfirmModal('¿Regenerar orden?')
-      setContentConfirmModal('Al regenear una orden los cambios que haya realizado en al anterior se descartarán, ¿está seguro que desea continuar?')
-    } else{
+      setFileType('workOrder')
+      setContentConfirmModal('Al regenear una orden los cambios que haya realizado en la anterior se descartarán, ¿está seguro que desea continuar?')
+    } else {
       generateWorkOrder()
     }
+  }
+
+  const handleDeleteFile = (element) => {
+    setTitleConfirmModal('Confirmar eliminación')
+    setContentConfirmModal(`¿Está seguro que desea eliminar el archivo ${element.name} ? `)
+    setShowConfirmModal(true)
+    setDeleteFile(element);
   }
   return (
     <>
@@ -195,7 +242,7 @@ function OrderDetail() {
         <div style={styles.container}>
           <h2 style={styles.title}>Detalle de la Orden</h2>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '10%' }}>
-            <div  style={{ display: 'flex', alignItems: 'center', width: '70%' }}>
+            <div style={{ display: 'flex', alignItems: 'center', width: '70%' }}>
               <label style={{ marginRight: '10px' }} >Cambiar de estado:</label>
               <FormSelect value={detail.state} onChange={handleChangeState} style={{ width: '60%' }}>
                 <option value="without_material">Sin material</option>
@@ -238,10 +285,13 @@ function OrderDetail() {
             {detail.drawings && detail.drawings.length > 0 && (
               detail.drawings.map((drawing) => (
                 <div key={drawing.id} style={styles.drawingItem}>
+                  <span>
                   <FaFilePdf style={styles.icon} />
                   <a href={drawing.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
                     {drawing.name}
                   </a>
+                  </span>
+                  <DeleteButton2 onClick={()=> {setFileType('drawing'); handleDeleteFile(drawing)}}/>
                 </div>
               ))
             )}
@@ -270,10 +320,13 @@ function OrderDetail() {
             {detail.supplier_delivery_notes && detail.supplier_delivery_notes.length > 0 && (
               detail.supplier_delivery_notes.map((supplier_note) => (
                 <div key={supplier_note.id} style={styles.drawingItem}>
-                  <FaImage style={styles.iconImage} />
-                  <a href={supplier_note.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                    {supplier_note.name}
-                  </a>
+                  <span>
+                    <FaImage style={styles.iconImage} />
+                    <a href={supplier_note.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                      {supplier_note.name}
+                    </a>
+                  </span>
+                  <DeleteButton2 onClick={() => { setFileType('supplierNote'); handleDeleteFile(supplier_note) }} />
                 </div>
               ))
             )}
@@ -282,17 +335,20 @@ function OrderDetail() {
           <div style={styles.drawingsContainer}>
             <hr />
             <div style={styles.headerContainer}>
-              <h3 style={styles.sectionTitle}>Certificado de matetiales</h3>
+              <h3 style={styles.sectionTitle}>Certificado de materiales</h3>
               <Button style={styles.newDrawButton} onClick={() => { setFileType('certificate'); setshowUploadModal(true); }}>Cargar certificado</Button>
             </div>
 
             {detail.certificate_of_materials && detail.certificate_of_materials.length > 0 && (
               detail.certificate_of_materials.map((certificate) => (
                 <div key={certificate.id} style={styles.drawingItem}>
-                  <FaImage style={styles.iconImage} />
-                  <a href={certificate.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                    {certificate.name}
-                  </a>
+                  <span>
+                    <FaImage style={styles.iconImage} />
+                    <a href={certificate.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                      {certificate.name}
+                    </a>
+                  </span>
+                  <DeleteButton2 onClick={()=> {setFileType('certificate'); handleDeleteFile(certificate)}} />
                 </div>
               ))
             )}
@@ -308,10 +364,13 @@ function OrderDetail() {
             {detail.delivery_notes && detail.delivery_notes.length > 0 && (
               detail.delivery_notes.map((deliveryNote) => (
                 <div key={deliveryNote.id} style={styles.drawingItem}>
-                  <FaImage style={styles.iconImage} />
-                  <a href={deliveryNote.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                    {deliveryNote.name}
-                  </a>
+                  <span>
+                    <FaImage style={styles.iconImage} />
+                    <a href={deliveryNote.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                      {deliveryNote.name}
+                    </a>
+                  </span>
+                  <DeleteButton2 onClick={()=> {setFileType('deliveryNote'); handleDeleteFile(deliveryNote)}} />
                 </div>
               ))
             )}
@@ -328,7 +387,7 @@ function OrderDetail() {
                   </>
                 ) : detail.work_order != null ? (
                   "Regenerar orden"
-                ): (
+                ) : (
 
                   "Generar orden"
                 )}
@@ -338,10 +397,12 @@ function OrderDetail() {
 
             {detail.work_order != null && (
               <div style={styles.drawingItem}>
-                <FaFileExcel style={styles.iconExcel} />
-                <a href={detail.work_order.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                  {detail.work_order.name}
-                </a>
+                <span>
+                  <FaFileExcel style={styles.iconExcel} />
+                  <a href={detail.work_order.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                    {detail.work_order.name}
+                  </a>
+                </span>
               </div>
             )}
           </div>
@@ -371,11 +432,11 @@ function OrderDetail() {
       />
 
       <ConfirmModal
-      show = {showConfirmModal}
-      title = {titleConfirmModal}
-      content = {contentConfirmModal}
-      onConfirm = {handleConfirmModalGenearte}
-      onCancel = {handleCloseConfirmModal}/>
+        show={showConfirmModal}
+        title={titleConfirmModal}
+        content={contentConfirmModal}
+        onConfirm={handleConfirmModalGenearte}
+        onCancel={handleCloseConfirmModal} />
     </>
   );
 }
@@ -456,6 +517,7 @@ const styles = {
     padding: "10px",
     backgroundColor: "#fff",
     borderRadius: "4px",
+    justifyContent: "space-between",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
   },
   icon: {
