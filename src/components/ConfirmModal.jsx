@@ -1,7 +1,7 @@
-import { Button, Modal } from "react-bootstrap";
-import "../components/styles.css"
+import { Button, Modal, Spinner } from "react-bootstrap";
+import React from "react";
 
-function ConfirmModal({ show, title, content, onConfirm, onCancel }) {
+function ConfirmModal({ show, title, content, onConfirm, onCancel, deleting }) {
   return (
     <>
       {show && <div className="global-backdrop" />}
@@ -15,12 +15,24 @@ function ConfirmModal({ show, title, content, onConfirm, onCancel }) {
         <Modal.Header closeButton>
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>{content}</Modal.Body>
+        <Modal.Body>
+          {deleting ? (
+           <>
+           <Spinner
+            animation="border"
+            size="sm"
+           />{" "}
+           Eliminando archivo...
+           </>
+          ) : (
+            content
+          )}
+        </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={onCancel}>
             Cancelar
           </Button>
-          <Button onClick={onConfirm}>
+          <Button onClick={onConfirm} disabled={deleting}>
             Confirmar
           </Button>
         </Modal.Footer>

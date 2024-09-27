@@ -1,5 +1,6 @@
 import { Form, useLocation } from "react-router-dom";
 import { OrderService } from "../../service/Order";
+import { format, parseISO } from 'date-fns';
 import { useEffect, useState } from "react";
 import { FaFileExcel, FaFilePdf, FaImage } from 'react-icons/fa';
 import { useTranslation } from "react-i18next";
@@ -15,8 +16,9 @@ import EditButton2 from "../Buttons/EditButton2";
 import OrderForm from "./OrderForm";
 import Notification from "../notification";
 import ConfirmModal from "../ConfirmModal";
-import DeleteButton from "../Buttons/DeleteButton";
 import DeleteButton2 from "../Buttons/DeleteButton2";
+import ModalDelivery from "./modalDelivery";
+import { setDefaultOptions } from "date-fns/setDefaultOptions";
 
 function OrderDetail() {
   const location = useLocation();
@@ -34,6 +36,9 @@ function OrderDetail() {
   const [clientName, setClientName] = useState('');
   const [notification, setNotification] = useState({ show: false, message: '' });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [newState, setNewState] = useState({});
+  const [deleting, setDeleting] = useState(false);
+  const [showDeliveryModal, setShowDeliveryModal] = useState(false);
   const [titleConfirmModal, setTitleConfirmModal] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [contentConfirmModal, setContentConfirmModal] = useState('');
@@ -57,22 +62,32 @@ function OrderDetail() {
   const formatDate = (dateString) => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
     if (dateString == null) {
-      return
+      return;
     }
-    return new Date(dateString).toLocaleDateString('es-ES', options);
+
+    const date = new Date(dateString);
+    date.setHours(date.getHours() + date.getTimezoneOffset() / 60);
+    return date.toLocaleDateString('es-ES', options);
   };
 
   const dateFormat = (dateString) => {
     if (dateString == null) {
-      return
+      return;
     }
+
     const date = new Date(dateString);
+
+    // Ajustar la fecha según la zona horaria local
+    date.setHours(date.getHours() + date.getTimezoneOffset() / 60);
+
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
-  }
+  };
+
+
   const handleCloseUploadModal = () => {
     setshowUploadModal(false);
     fetchOrder();
@@ -165,7 +180,18 @@ function OrderDetail() {
     fetchOrder();
   }
   const handleChangeState = async (e) => {
-    let newState = { state: e.target.value };
+    let stateValue = e.target.value;
+    let newState = { state: stateValue };
+
+    if (newState.state === 'delivered_and_invoiced') {
+      setShowDeliveryModal(true);
+      setNewState(newState);
+    } else {
+      await updateOrderState(newState);
+    }
+  }
+
+  const updateOrderState = async (newState) => {
     try {
       await OrderService.editOrder(newState, detail.id);
       fetchOrder();
@@ -188,22 +214,22 @@ function OrderDetail() {
   }
 
   const handleConfirmModalGenearte = async () => {
+    setDeleting(true);
     try {
       switch (fileType) {
         case 'drawing':
-          await DrawingsService.delete(delteFile)
+          await DrawingsService.delete(delteFile);
           break;
         case 'certificate':
-          console.log('certificado')
-          console.log(delteFile)
+          await CertificateOfMaterialsService.delete(delteFile);
           break;
         case 'supplierNote':
-          await SupplierNoteSerive.deleteSupplierNote(delteFile)
+          await SupplierNoteSerive.deleteSupplierNote(delteFile);
           console.log(delteFile)
 
           break;
         case 'deliveryNote':
-          await DeliveryNoteService.delete(delteFile)
+          await DeliveryNoteService.delete(delteFile);
           break;
         case 'workOrder':
           generateWorkOrder();
@@ -211,12 +237,11 @@ function OrderDetail() {
       }
     } catch (error) {
       console.log(error)
+    } finally {
+      setDeleting(false);
     }
-
     handleCloseConfirmModal();
     fetchOrder();
-
-
   }
 
   const handleWorkOrder = () => {
@@ -235,6 +260,15 @@ function OrderDetail() {
     setContentConfirmModal(`¿Está seguro que desea eliminar el archivo ${element.name} ? `)
     setShowConfirmModal(true)
     setDeleteFile(element);
+  }
+
+  const handleCloseDeliveryModal = () => {
+    setShowDeliveryModal(false)
+  }
+
+  const handleSaveDeliveryDate = () => {
+    updateOrderState(newState);
+    setNewState('')
   }
   return (
     <>
@@ -286,12 +320,12 @@ function OrderDetail() {
               detail.drawings.map((drawing) => (
                 <div key={drawing.id} style={styles.drawingItem}>
                   <span>
-                  <FaFilePdf style={styles.icon} />
-                  <a href={drawing.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                    {drawing.name}
-                  </a>
+                    <FaFilePdf style={styles.icon} />
+                    <a href={drawing.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                      {drawing.name}
+                    </a>
                   </span>
-                  <DeleteButton2 onClick={()=> {setFileType('drawing'); handleDeleteFile(drawing)}}/>
+                  <DeleteButton2 onClick={() => { setFileType('drawing'); handleDeleteFile(drawing) }} />
                 </div>
               ))
             )}
@@ -348,7 +382,7 @@ function OrderDetail() {
                       {certificate.name}
                     </a>
                   </span>
-                  <DeleteButton2 onClick={()=> {setFileType('certificate'); handleDeleteFile(certificate)}} />
+                  <DeleteButton2 onClick={() => { setFileType('certificate'); handleDeleteFile(certificate) }} />
                 </div>
               ))
             )}
@@ -370,7 +404,7 @@ function OrderDetail() {
                       {deliveryNote.name}
                     </a>
                   </span>
-                  <DeleteButton2 onClick={()=> {setFileType('deliveryNote'); handleDeleteFile(deliveryNote)}} />
+                  <DeleteButton2 onClick={() => { setFileType('deliveryNote'); handleDeleteFile(deliveryNote) }} />
                 </div>
               ))
             )}
@@ -434,9 +468,17 @@ function OrderDetail() {
       <ConfirmModal
         show={showConfirmModal}
         title={titleConfirmModal}
-        content={contentConfirmModal}
+        content={deleting ? 'Eliminando archivo...' : contentConfirmModal}
         onConfirm={handleConfirmModalGenearte}
-        onCancel={handleCloseConfirmModal} />
+        onCancel={handleCloseConfirmModal}
+        deleting={deleting}
+      />
+
+      <ModalDelivery
+        show={showDeliveryModal}
+        handleClose={handleCloseDeliveryModal}
+        handleSave={handleSaveDeliveryDate}
+        order={detail} />
     </>
   );
 }
