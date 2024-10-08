@@ -1,18 +1,18 @@
+import {getHeaders, handleResponse } from './apiUtils';
 const BASE_URL = 'http://127.0.0.1:3000'
 export const SupplierService = {
 
   getSuppliers: async (name) => {
-    const response = await fetch(`${BASE_URL}/suppliers/?name=${name}`);
-    const data = await response.json();
-    return data;
+    const response = await fetch(`${BASE_URL}/suppliers/?name=${name}`,{
+      headers: getHeaders()
+    });
+    return handleResponse(response);
   },
   newSupplier: async (name) => {
     const response = await fetch(`${BASE_URL}/suppliers/`,
       {
         method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: getHeaders(),
         body: JSON.stringify(name)
       }
     );
@@ -22,9 +22,7 @@ export const SupplierService = {
   editSupplier: async (body,supplierID ) => {
     const response = await fetch(`${BASE_URL}/suppliers/${supplierID}`, {
       method: "PUT",
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getHeaders(),
       body: JSON.stringify(body),
     });
 

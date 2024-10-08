@@ -24,7 +24,8 @@ const resources = {
       'quantity': 'Cantidad',
       'supplier_note': 'Remito proveedor',
       'supplier_name': 'Proveedor',
-      'ingresed_at': 'Fecha de ingreso'
+      'ingresed_at': 'Fecha de ingreso',
+      'Invalid username or password':'usuario o contraseña inválidas'
     }
   }
 };

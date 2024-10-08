@@ -1,30 +1,39 @@
+import {getHeaders, handleResponse } from './apiUtils';
 const BASE_URL = 'http://127.0.0.1:3000'
+
 export const OrderService = {
 
   getOrders: async (filters) => {
-    const response = await fetch(`${BASE_URL}/orders/?state=${filters.state}&purchase_order=${filters.purchaseOrder}&client_name=${filters.clientName}&name=${filters.orderName}&page=${filters.page}`);
-    const data = await response.json();
-    console.log(data)
-    return data;
+    const response = await fetch(`${BASE_URL}/orders/?state=${filters.state}&purchase_order=${filters.purchaseOrder}&client_name=${filters.clientName}&name=${filters.orderName}&page=${filters.page}`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+    return handleResponse(response);
 
   },
   getOder: async (order) => {
-    const response = await fetch(`${BASE_URL}/orders/${order.id}`);
-    const data = await response.json();
-    return data;
+    const response = await fetch(`${BASE_URL}/orders/${order.id}`,{
+      method: 'GET',
+      headers: getHeaders(),
+    });
+    return handleResponse(response);
+
   },
   getMaterials: async (orderID) => {
-    const response = await fetch(`${BASE_URL}/orders/${orderID}/materials_in_order`);
-    const data = await response.json();
-    return data;
+    const response = await fetch(`${BASE_URL}/orders/${orderID}/materials_in_order`,
+      {
+        method: 'GET',
+        headers: getHeaders(),
+      }
+    );
+    return handleResponse(response);
+
   },
   newOrder: async (order) => {
     const response = await fetch(`${BASE_URL}/orders/`,
     {
       method: "POST",
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: getHeaders(),
       body: JSON.stringify(order)
     }
   );
@@ -36,9 +45,7 @@ export const OrderService = {
     const response = await fetch(`${BASE_URL}/orders/${order.id}/generate_work_order`,
     {
       method: "POST",
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: getHeaders(),
       body: JSON.stringify(order)
     }
   );
@@ -48,11 +55,14 @@ export const OrderService = {
   editOrder: async (body, orderID) => {
     const response = await fetch(`${BASE_URL}/orders/${orderID}`, {
       method: "PUT",
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getHeaders(),
       body: JSON.stringify(body),
     });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
 
     const data = await response.json();
     return data;

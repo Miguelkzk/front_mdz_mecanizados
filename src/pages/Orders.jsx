@@ -124,7 +124,7 @@ function Orders() {
       />
 
       <div style={styles.paginationContainer}>
-        <button type="button" class="btn btn-outline-primary"
+        <button type="button" className="btn btn-outline-primary"
           onClick={() => fetchOrders(prevPage)}
           disabled={!prevPage}
         >
@@ -133,7 +133,7 @@ function Orders() {
 
         <span>Página {currentPage} de {totalPages}</span>
 
-        <button type="button" class="btn btn-outline-primary"
+        <button type="button" className="btn btn-outline-primary"
           onClick={() => fetchOrders(nextPage)}
           disabled={!nextPage}
         >

@@ -194,8 +194,8 @@ function OrderDetail() {
   const updateOrderState = async (newState) => {
     try {
       await OrderService.editOrder(newState, detail.id);
-      fetchOrder();
       setNotification({ show: true, message: 'Estado actualizado correctamente.' });
+      fetchOrder();
     } catch (error) {
       console.error('Error al cambiar el estado:', error);
       setNotification({ show: true, message: 'Error al actualizar el estado.' });
@@ -545,7 +545,7 @@ const styles = {
   },
   drawingsContainer: {
     marginTop: "20px",
-    marginBottom: '30px'
+    marginBottom: '5%'
   },
   sectionTitle: {
     fontSize: "24px",
