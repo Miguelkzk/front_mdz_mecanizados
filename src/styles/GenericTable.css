@@ -1,0 +1,19 @@
+.table-responsive {
+  overflow-x: auto; /* Permitir desplazamiento horizontal */
+  margin: 15px 0;
+}
+
+.generic-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.generic-table th, .generic-table td {
+  padding: 10px;
+  border: 1px solid #aab6bd;
+}
+
+.generic-table th {
+  background-color: #f8f9fa;
+}

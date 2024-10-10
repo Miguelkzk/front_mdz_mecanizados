@@ -1,0 +1,155 @@
+.container {
+  max-width: 80%; /* Más ancho para pantallas pequeñas */
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+}
+@media (max-width: 1300px) {
+  .container {
+    max-width: 90%; /* Ancho máximo para pantallas medianas */
+  }
+}
+
+@media (max-width: 800px) {
+  .container {
+    max-width: 100%; /* Ancho máximo para pantallas pequeñas */
+  }
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  flex-wrap: wrap; /* Para que el botón se mueva hacia abajo si el espacio es pequeño */
+}
+
+.title {
+  color: #333;
+  font-size: 32px;
+  text-align: center;
+  flex: 1 1 100%; /* Ocupa todo el ancho disponible en pantallas pequeñas */
+}
+
+.newOrderButton {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  flex: 1 1 100%; /* Para pantallas pequeñas, el botón ocupará todo el ancho disponible */
+}
+
+.actionsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.groupContainer {
+  width: 48%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.filterContainer,
+.formFilterContainer {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  width: 45%; /* Este ancho se aplica en pantallas grandes */
+}
+
+@media (max-width: 1200px) {
+  .groupContainer {
+    flex-direction: column; /* Apilar contenedores verticalmente */ /* Asegura que ocupe el 100% del ancho */
+    justify-content: space-between;
+  }
+
+  .filterContainer,
+  .formFilterContainer {
+    width: 100% !important; /* Los formularios dentro del contenedor ocuparán todo el ancho en pantallas pequeñas */
+    margin-bottom: 10px; /* Separación entre formularios */
+  }
+
+  .formFilterInput, .filter {
+    width: 100%; /* Asegurar que los campos de texto ocupen el 100% del contenedor */
+  }
+}
+
+
+@media (max-width: 550px) {
+  .actionsContainer{
+    flex-direction: column;
+  }
+  .groupContainer {
+    flex-direction: column; /* Apilar contenedores verticalmente */ /* Asegura que ocupe el 100% del ancho */
+    justify-content: space-between;
+    width: 100% !important;
+  }
+
+  .filterContainer,
+  .formFilterContainer {
+    width: 100% !important; /* Los formularios dentro del contenedor ocuparán todo el ancho en pantallas pequeñas */
+    margin-bottom: 10px; /* Separación entre formularios */
+  }
+
+  .formFilterInput, .filter {
+    width: 100%; /* Asegurar que los campos de texto ocupen el 100% del contenedor */
+  }
+}
+
+
+.filterContainer,
+.formFilterContainer {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  width: 45%;
+}
+.filterLabel {
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #555;
+}
+
+.filter,
+.formFilterInput {
+  width: 100%; /* Se ajusta a su contenedor */
+
+}
+
+.tableContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .headerContainer {
+    flex-direction: column; /* Cambiar a columna para que el título y el botón estén uno encima del otro */
+    align-items: center; /* Centrar los elementos */
+  }
+
+  .title {
+    margin-bottom: 10px; /* Añadir un margen para separar el título del botón */
+  }
+
+  .newOrderButton {
+    position: relative; /* Cambiar a posición relativa */
+    margin: 0; /* Eliminar márgenes si es necesario */
+  }
+}

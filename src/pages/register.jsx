@@ -32,7 +32,7 @@ function Register() {
     <>
       <div style={styles.container}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <img src="public/logo_MM__1_-removebg-preview.png" />
+        <img src="/logo_MM__1_-removebg-preview.png" alt="Logo" />
         </div>
         <div style={styles.headerContainer}>
           <h2 style={styles.title}>Nuevo usuario</h2>

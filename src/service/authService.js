@@ -13,11 +13,19 @@ export const authService = {
 
     // Verifica si la respuesta es exitosa
     if (!response.ok) {
-      const errorData = await response.json(); // Obtiene el mensaje de error del backend
+      const contentType = response.headers.get("Content-Type");
+
+      let errorData;
+      if (contentType && contentType.includes("application/json")) {
+        errorData = await response.json(); // Solo intenta parsear si es JSON
+      } else {
+        errorData = { error: await response.text() }; // De lo contrario, maneja como texto
+      }
+
       throw new Error(errorData.error || 'Error desconocido'); // Lanza un error con el mensaje del backend
     }
 
-    const token = response.headers.get('authorization')
+    const token = response.headers.get('authorization');
 
     if (!token) {
       throw new Error('Token de autorización no encontrado en la respuesta.');
@@ -28,7 +36,6 @@ export const authService = {
 
     return { data, token }; // Devuelve los datos junto con el token
   },
-
   logout: async() => {
     const response = await fetch(`${BASE_URL}/logout`, {
       method: "DELETE",
