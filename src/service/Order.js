@@ -30,6 +30,7 @@ export const OrderService = {
 
   },
   newOrder: async (order) => {
+    console.log(order)
     const response = await fetch(`${BASE_URL}/orders/`,
     {
       method: "POST",

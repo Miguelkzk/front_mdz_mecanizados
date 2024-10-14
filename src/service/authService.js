@@ -47,9 +47,7 @@ export const authService = {
   register : async(formData) => {
     const response = await fetch(`${BASE_URL}/signup`, {
       method: "POST",
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: getHeaders(),
       body: JSON.stringify(formData)
     });}
 };
