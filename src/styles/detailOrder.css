@@ -1,0 +1,114 @@
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  max-width: 90%;
+  margin: 20px auto;
+  gap: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+  flex: 1;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.materialsContainer {
+  flex: 1;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+.detailContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.label {
+  font-weight: bold;
+  color: #555;
+}
+
+.value {
+  color: #555;
+}
+
+.drawingsContainer {
+  margin-top: 20px;
+  margin-bottom: 5%;
+}
+
+.sectionTitle {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.drawingItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 4px;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+  margin-right: 10px;
+  color: #d32f2f;
+}
+
+.iconExcel {
+  margin-right: 10px;
+  color: #22d319;
+}
+
+.iconImage {
+  margin-right: 10px;
+  color: rgb(0, 123, 255);
+}
+
+.drawingLink {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.newDrawButton {
+  padding: 8px 20px;
+  font-size: 16px;
+}

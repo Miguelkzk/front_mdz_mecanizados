@@ -18,7 +18,7 @@ import Notification from "../notification";
 import ConfirmModal from "../ConfirmModal";
 import DeleteButton2 from "../Buttons/DeleteButton2";
 import ModalDelivery from "./modalDelivery";
-import { setDefaultOptions } from "date-fns/setDefaultOptions";
+import "../../styles/detailOrder.css"
 
 function OrderDetail() {
   const location = useLocation();
@@ -272,9 +272,9 @@ function OrderDetail() {
   }
   return (
     <>
-      <div style={styles.wrapper}>
-        <div style={styles.container}>
-          <h2 style={styles.title}>Detalle de la Orden</h2>
+      <div className="wrapper">
+        <div className="container">
+          <h2 sclassName="title">Detalle de la Orden</h2>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '10%' }}>
             <div style={{ display: 'flex', alignItems: 'center', width: '70%' }}>
               <label style={{ marginRight: '10px' }} >Cambiar de estado:</label>
@@ -294,7 +294,7 @@ function OrderDetail() {
             message={notification.message}
             onClose={handleCloseNotification}
           />
-          <div style={styles.detailContainer}>
+          <div className="detailContainer">
             <DetailItem label="Cliente" value={detail.client} />
             <DetailItem label="Orden de compra" value={detail.purchase_order} />
             <DetailItem label="Nombre" value={detail.name} />
@@ -309,19 +309,19 @@ function OrderDetail() {
             <DetailItem label="Estado" value={t(detail.state)} />
           </div>
 
-          <div style={styles.drawingsContainer}>
-            <div style={styles.headerContainer}>
+          <div className="drawingsContainer">
+            <div className="headerContainer">
 
-              <h3 style={styles.sectionTitle}>Planos</h3>
-              <Button style={styles.newDrawButton} onClick={() => { setFileType('drawing'); setshowUploadModal(true); }}>Agregar plano</Button>
+              <h3 className="sectionTitle">Planos</h3>
+              <Button className="newDrawButton" onClick={() => { setFileType('drawing'); setshowUploadModal(true); }}>Agregar plano</Button>
             </div>
 
             {detail.drawings && detail.drawings.length > 0 && (
               detail.drawings.map((drawing) => (
-                <div key={drawing.id} style={styles.drawingItem}>
+                <div key={drawing.id} className="drawingItem">
                   <span>
-                    <FaFilePdf style={styles.icon} />
-                    <a href={drawing.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                    <FaFilePdf className="icon"/>
+                    <a href={drawing.view_url} target="_blank" rel="noopener noreferrer" className="drawingLink">
                       {drawing.name}
                     </a>
                   </span>

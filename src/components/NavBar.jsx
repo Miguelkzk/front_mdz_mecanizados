@@ -3,9 +3,9 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { NavDropdown } from 'react-bootstrap';
+import { NavDropdown, Container } from 'react-bootstrap';
 import { authService } from '../service/authService';
-import { FaUserCircle } from 'react-icons/fa'; // Importa el ícono
+import { FaUserCircle } from 'react-icons/fa';
 
 function NavBar() {
   const navigate = useNavigate();
@@ -37,22 +37,52 @@ function NavBar() {
   };
 
   return (
-    <Navbar bg="primary" variant="dark" expand="lg" style={{ justifyContent: 'space-between' }}>
-      <span style={{ marginLeft: '1%', cursor: 'pointer' }}>
-        <Navbar.Brand onClick={() => navigate('/')}>{t('Órdenes')}</Navbar.Brand>
-        <Navbar.Brand onClick={() => navigate('/clients')}>{t('Clientes')}</Navbar.Brand>
-        <Navbar.Brand onClick={() => navigate('/suppliers')}>{t('Proveedores')}</Navbar.Brand>
-      </span>
-      <span style={{ marginRight: '1%', cursor: 'pointer', color: 'white', fontSize: '1.2rem' }}>
-        {user && (
-          <NavDropdown title={<><FaUserCircle style={{ marginRight: '5px' }} />{user}</>} id="basic-nav-dropdown" align="end" menuVariant="dark">
-            <NavDropdown.Item href="/register">Registrar usuario</NavDropdown.Item>
-            <NavDropdown.Item onClick={logut}>Cerrar sesión</NavDropdown.Item>
-          </NavDropdown>
-        )}
-      </span>
+    <Navbar bg="primary" variant="dark" expand="md">
+      <Container fluid>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">
+            {/* Mueve los enlaces dentro de Nav para evitar problemas de layout */}
+            <Nav.Link onClick={() => navigate('/')} style={styles.navLinks}>
+              {t('Órdenes')}
+            </Nav.Link>
+            <Nav.Link onClick={() => navigate('/clients')} style={styles.navLinks}>
+              {t('Clientes')}
+            </Nav.Link>
+            <Nav.Link onClick={() => navigate('/suppliers')} style={styles.navLinks}>
+              {t('Proveedores')}
+            </Nav.Link>
+          </Nav>
+
+          {user && (
+            <Nav className="ml-auto">
+              <NavDropdown
+                title={
+                  <>
+                    <FaUserCircle style={{ marginRight: '5px' }} />
+                    {user}
+                  </>
+                }
+                id="basic-nav-dropdown"
+                align="end"
+                menuVariant="dark"
+              >
+                <NavDropdown.Item href="/register">Registrar usuario</NavDropdown.Item>
+                <NavDropdown.Item onClick={logut}>Cerrar sesión</NavDropdown.Item>
+              </NavDropdown>
+            </Nav>
+          )}
+        </Navbar.Collapse>
+      </Container>
     </Navbar>
   );
 }
 
 export default NavBar;
+const styles = {
+  navLinks : {
+    cursor: "pointer",
+    color: "white",
+    fontSize: "20px"
+  }
+}
