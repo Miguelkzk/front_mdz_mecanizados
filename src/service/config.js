@@ -1,0 +1,1 @@
+export const BASE_URL = 'backmzamecanizados-production.up.railway.app';

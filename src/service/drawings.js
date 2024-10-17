@@ -1,4 +1,5 @@
-const BASE_URL = 'http://127.0.0.1:3000';
+import { BASE_URL } from './config';
+
 const getHeaders = () => {
   const token = localStorage.getItem('authToken');
   return {

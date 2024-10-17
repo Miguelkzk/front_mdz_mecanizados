@@ -1,5 +1,6 @@
 import {getHeaders, handleResponse } from './apiUtils';
-const BASE_URL = 'http://127.0.0.1:3000'
+import { BASE_URL } from './config';
+
 
 export const ClientService = {
   getClientByName: async (name) => {

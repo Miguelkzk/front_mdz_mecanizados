@@ -4,7 +4,8 @@ const getHeaders = () => {
     'Authorization': `${token}`,
   };
 };
-const BASE_URL = 'http://127.0.0.1:3000';
+import { BASE_URL } from './config';
+
 
 export const DeliveryNoteService = {
   upload: async (formData) => {
