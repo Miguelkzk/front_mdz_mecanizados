@@ -309,11 +309,11 @@ function OrderDetail() {
             <DetailItem label="Estado" value={t(detail.state)} />
           </div>
 
-          <div className="drawingsContainer">
-            <div className="headerContainer">
+          <div style={styles.drawingsContainer}>
+            <div style={styles.headerContainer}>
 
-              <h3 className="sectionTitle">Planos</h3>
-              <Button className="newDrawButton" onClick={() => { setFileType('drawing'); setshowUploadModal(true); }}>Agregar plano</Button>
+              <h3 style={styles.sectionTitle}> Planos</h3>
+              <Button style={styles.newDrawButton}  onClick={() => { setFileType('drawing'); setshowUploadModal(true); }}>Agregar plano</Button>
             </div>
 
             {detail.drawings && detail.drawings.length > 0 && (
