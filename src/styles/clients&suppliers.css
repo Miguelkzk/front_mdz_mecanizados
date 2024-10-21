@@ -1,0 +1,65 @@
+.container {
+  max-width: 80%; /* Más ancho para pantallas pequeñas */
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+}
+@media (max-width: 1300px) {
+  .container {
+    max-width: 90%; /* Ancho máximo para pantallas medianas */
+  }
+}
+
+@media (max-width: 800px) {
+  .container {
+    max-width: 100%; /* Ancho máximo para pantallas pequeñas */
+  }
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  flex-wrap: wrap; /* Para que el botón se mueva hacia abajo si el espacio es pequeño */
+}
+
+.title {
+  color: #333;
+  font-size: 32px;
+  text-align: center;
+  flex: 1 1 100%; /* Ocupa todo el ancho disponible en pantallas pequeñas */
+}
+
+.newButton {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  flex: 1 1 100%; /* Para pantallas pequeñas, el botón ocupará todo el ancho disponible */
+}
+
+
+.tableContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+
+  .title {
+    margin-bottom: 10px;
+  }
+
+  .newButton {
+    position: relative;
+    margin: 0;
+  }
+}

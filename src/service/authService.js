@@ -1,3 +1,4 @@
+import { GiConsoleController } from 'react-icons/gi';
 import {getHeaders} from './apiUtils'
 import { BASE_URL } from './config';
 
@@ -45,9 +46,14 @@ export const authService = {
     return data
   },
   register : async(formData) => {
+    console.log(formData)
     const response = await fetch(`${BASE_URL}/signup`, {
       method: "POST",
       headers: getHeaders(),
       body: JSON.stringify(formData)
-    });}
+    });
+    const data = await response.json()
+    return data;
+  }
+
 };

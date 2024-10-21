@@ -43,13 +43,13 @@ function NavBar() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             {/* Mueve los enlaces dentro de Nav para evitar problemas de layout */}
-            <Nav.Link onClick={() => navigate('/')} style={styles.navLinks}>
+            <Nav.Link href='/' style={styles.navLinks}>
               {t('Órdenes')}
             </Nav.Link>
-            <Nav.Link onClick={() => navigate('/clients')} style={styles.navLinks}>
+            <Nav.Link href='/clients' style={styles.navLinks}>
               {t('Clientes')}
             </Nav.Link>
-            <Nav.Link onClick={() => navigate('/suppliers')} style={styles.navLinks}>
+            <Nav.Link href='/suppliers' style={styles.navLinks}>
               {t('Proveedores')}
             </Nav.Link>
           </Nav>

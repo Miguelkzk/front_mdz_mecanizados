@@ -41,15 +41,15 @@ function Suppliers(){
 
   return (
     <>
-    <div style={styles.container}>
-      <div style={styles.headerContainer}>
+    <div className="container">
+      <div className="headerContainer">
 
-        <h2 style={styles.title}>Proveedores</h2>
-        <Button style={styles.newClientButton} onClick={() => (handleOpenModal())}>Nuevo proveedor</Button>
+        <h2 lassName="title">Proveedores</h2>
+        <Button className="newButton"  onClick={() => (handleOpenModal())}>Nuevo proveedor</Button>
       </div>
 
       <hr />
-      <div style={styles.tableContainer}>
+      <div className="tableContainer">
         <GenericTable
           fields={fields}
           elements={suppliers}
