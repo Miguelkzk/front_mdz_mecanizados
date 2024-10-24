@@ -74,7 +74,7 @@ function MaterialForm({ show, handleClose, orderID }) {
     // setTimeout para asegurar que procese el cambio
     setTimeout(() => {
       setFilteredSuppliers([]);
-    }, 100);
+    }, 700);
   };
 
   const validateForm = () => {
