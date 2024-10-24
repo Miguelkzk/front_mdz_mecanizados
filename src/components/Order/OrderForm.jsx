@@ -119,7 +119,7 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelec
 
     setTimeout(() => {
       setFilteredClients([]);
-    }, 100);
+    }, 700);
   }
 
   useEffect(() => {
