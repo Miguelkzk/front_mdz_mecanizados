@@ -77,10 +77,10 @@ function RemunerationDetail() {
     profits.forEach((profit) => {
       let total_current_month = profit.amount_usd + (profit.amount_ars / profit.exchange_rate);
       let element = {
-      id: profit.id,
-      month: getMonthName(profit.date),
-      exchange_rate: currencyFormat(profit.exchange_rate),
-      total_month: currencyFormat(total_current_month)
+        id: profit.id,
+        month: getMonthName(profit.date),
+        exchange_rate: currencyFormat(profit.exchange_rate),
+        total_month: currencyFormat(total_current_month)
       };
       let graph_element = {
         name: getMonthName(profit.date),
@@ -133,7 +133,13 @@ function RemunerationDetail() {
   };
 
   const formatYAxis = (value) => {
-    return value.toLocaleString('es-Es');
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+      return `${(value / 1000).toFixed(1)}K`;
+    } else {
+      return value.toLocaleString('es-Es');
+    }
   };
 
 
@@ -141,16 +147,34 @@ function RemunerationDetail() {
     <>
       <div className="container" style={{ position: 'relative' }}>
         <div className="headerContainer">
-        <h2 className="title" >Facturado en {profit.year}</h2>
-        <Button className="newButton" onClick={() => { setShowModal(true); }}>Generar un detalle</Button>
+          <h2 className="title" >Facturado en {profit.year}</h2>
+          <Button className="newButton" onClick={() => { setShowModal(true); }}>Generar un detalle</Button>
         </div>
-      <GenericTable fields={fields} elements={prettyData} />
+        <GenericTable fields={fields} elements={prettyData} />
       </div>
 
 
       <div className="container">
         <div className="headerContainer">
-          <h4>Gráfica en ARS y USD</h4>
+          <h4>Gráfica en pesos</h4>
+        </div>
+        <ResponsiveContainer width="100%" height={300}>
+          <AreaChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis
+              tickFormatter={formatYAxis}
+              domain={['auto', 'auto']}
+            />
+            <Tooltip
+              formatter={formatTooltip} />
+            <Legend />
+            <Area type="monotone" dataKey="ars" stroke="#8884d8" fillOpacity={0.3} fill="#8884d8" />
+          </AreaChart>
+        </ResponsiveContainer>
+
+        <div className="headerContainer">
+          <h4>Gráfica en dólares</h4>
         </div>
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart data={data}>
@@ -163,7 +187,6 @@ function RemunerationDetail() {
               formatter={formatTooltip} />
             <Legend />
             <Area type="monotone" dataKey="usd" stroke="#82ca9d" fillOpacity={0.3} fill="#82ca9d" />
-            <Area type="monotone" dataKey="ars" stroke="#8884d8" fillOpacity={0.3} fill="#8884d8" />
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -177,20 +200,20 @@ function RemunerationDetail() {
 
       <div className="container">
         <div className="headerContainer">
-          <h4>Gráfica en dólares</h4>
+          <h4>Gráfica total en dólares</h4>
           <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={graphData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis
-              tickFormatter={formatYAxis}
-            />
-            <Tooltip
-              formatter={formatTooltip} />
-            <Legend />
-            <Area type="monotone" dataKey="usd" stroke="#82ca9d" fillOpacity={0.3} fill="#82ca9d" />
-          </AreaChart>
-        </ResponsiveContainer>
+            <AreaChart data={graphData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis
+                tickFormatter={formatYAxis}
+              />
+              <Tooltip
+                formatter={formatTooltip} />
+              <Legend />
+              <Area type="monotone" dataKey="usd" stroke="#82ca9d" fillOpacity={0.3} fill="#82ca9d" />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
