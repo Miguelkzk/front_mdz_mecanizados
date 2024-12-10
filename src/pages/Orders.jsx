@@ -5,14 +5,16 @@ import { OrderService } from "../service/Order";
 import { Button, Form } from "react-bootstrap";
 import OrderForm from "../components/Order/OrderForm";
 import '../styles/Orders.css'
+import { useSearchParams } from 'react-router-dom';
 
 function Orders() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [orders, setOrders] = useState([]);
   const [filterState, setFilterState] = useState('');
   const [purchaseOrder, setPurchaseOrder] = useState('');
   const [clientName, setClientName] = useState('');
   const [orderName, setOrderName] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
   const [totalPages, setTotalPages] = useState(1);
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
@@ -25,11 +27,12 @@ function Orders() {
     'state'
   ];
 
+  // Se ejecuta cuando cambian los filtros o la página
   useEffect(() => {
-    fetchOrders();
-  }, [filterState, purchaseOrder, clientName, orderName]);
+    fetchOrders(currentPage);  // Asegúrate de pasar currentPage
+  }, [filterState, purchaseOrder, clientName, orderName, currentPage]);
 
-  const fetchOrders = async (page = 1) => {
+  const fetchOrders = async (page) => {
     const ordersData = await OrderService.getOrders({
       state: filterState,
       purchaseOrder: purchaseOrder,
@@ -42,6 +45,9 @@ function Orders() {
     setTotalPages(ordersData.total_pages);
     setNextPage(ordersData.next_page);
     setPrevPage(ordersData.prev_page);
+
+    // Actualizar los parámetros de la URL con la página actual
+    setSearchParams({ page: ordersData.current_page });
   };
 
   const viewDetail = (element) => {
@@ -50,7 +56,19 @@ function Orders() {
 
   const handleCloseModal = () => {
     setShowForm(false);
-    fetchOrders();
+    fetchOrders(currentPage);  // Volver a la página actual al cerrar el modal
+  };
+
+  const goToNextPage = () => {
+    if (nextPage) {
+      setCurrentPage(nextPage);
+    }
+  };
+
+  const goToPrevPage = () => {
+    if (prevPage) {
+      setCurrentPage(prevPage);
+    }
   };
 
   return (
@@ -61,9 +79,7 @@ function Orders() {
       </div>
       <hr />
       <div className="actionsContainer">
-
         <div className="groupContainer">
-
           <div className="filterContainer">
             <label className="filterLabel">Filtrar por estado:</label>
             <Form.Select
@@ -90,10 +106,8 @@ function Orders() {
               className="formFilterInput"
             />
           </div>
-
         </div>
         <div className="groupContainer">
-
           <div className="formFilterContainer">
             <label className="filterLabel">Buscar por cliente:</label>
             <Form.Control
@@ -114,10 +128,8 @@ function Orders() {
               className="formFilterInput"
             />
           </div>
-
         </div>
-
-      </div >
+      </div>
       <div className="tableContainer">
         <GenericTable
           fields={fields}
@@ -133,21 +145,12 @@ function Orders() {
         title={'Nueva orden'}
         editOrder={''}
       />
-
       <div className="paginationContainer">
-        <button type="button" className="btn btn-outline-primary"
-          onClick={() => fetchOrders(prevPage)}
-          disabled={!prevPage}
-        >
+        <button type="button" className="btn btn-outline-primary" onClick={goToPrevPage} disabled={!prevPage}>
           Anterior
         </button>
-
         <span>Página {currentPage} de {totalPages}</span>
-
-        <button type="button" className="btn btn-outline-primary"
-          onClick={() => fetchOrders(nextPage)}
-          disabled={!nextPage}
-        >
+        <button type="button" className="btn btn-outline-primary" onClick={goToNextPage} disabled={!nextPage}>
           Siguiente
         </button>
       </div>

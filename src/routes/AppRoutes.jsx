@@ -7,6 +7,8 @@ import Suppliers from '../pages/suppliers';
 import Login from '../pages/login';
 import ProtectedRoute from '../components/ProtectedRoute';
 import Register from '../pages/register';
+import Remunerations from '../pages/Remunerations';
+import RemunerationDetail from '../components/RemunerationDetail';
 
 const AppRoutes = () => {
   const location = useLocation(); // Obtener la ubicación actual
@@ -21,6 +23,8 @@ const AppRoutes = () => {
         <Route path="/clients" element={<ProtectedRoute element={Clients} />} />
         <Route path="/suppliers" element={<ProtectedRoute element={Suppliers} />} />
         <Route path="/register" element={<ProtectedRoute element={Register} />} />
+        <Route path="/profits" element={<ProtectedRoute element={Remunerations} />} />
+        <Route path='/profit-detail' element={<ProtectedRoute element={RemunerationDetail} />} />
       </Routes>
     </div>
   );

@@ -1,9 +1,7 @@
-// src/i18n.js
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Traducciones de ejemplo
 const resources = {
   es: {
     translation: {
@@ -25,19 +23,25 @@ const resources = {
       'supplier_note': 'Remito proveedor',
       'supplier_name': 'Proveedor',
       'ingresed_at': 'Fecha de ingreso',
-      'Invalid username or password':'usuario o contraseña inválidas'
+      'Invalid username or password':'usuario o contraseña inválidas',
+      'month': 'Mes',
+      'year': 'Año',
+      'amount_usd': 'Monto en USD',
+      'amount_ars': 'Monto en ARS',
+      'total_month': 'Total del mes',
+      'exchange_rate': 'Tasa de cambio USD/ARS',
     }
   }
 };
 
 i18n
-  .use(LanguageDetector) // Detecta el idioma del navegador
-  .use(initReactI18next) // Pasar i18n a react-i18next
+  .use(LanguageDetector)
+  .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'en', // Idioma de respaldo
+    fallbackLng: 'en',
     interpolation: {
-      escapeValue: false // React ya se encarga de la protección contra XSS
+      escapeValue: false
     }
   });
 
