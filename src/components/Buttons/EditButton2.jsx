@@ -3,7 +3,7 @@ import { PencilFill } from "react-bootstrap-icons";
 
 function EditButton2({ onClick }) {
   return (
-    <button type="button" className="btn btn-outline-secondary" onClick={onClick}>
+    <button type="button" className="btn btn-outline-secondary" onClick={onClick} style={{maxWidth: '200px'}}>
       Editar orden
       <PencilFill size={20} style={{ marginLeft: '8px' }} />
     </button>

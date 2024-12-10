@@ -300,15 +300,16 @@ function OrderDetail() {
   }
 
 
-    return (
-      <>
-        <div className="wrapper">
-          <div style={styles.materialsContainer}>
-            <h2 sclassName="title">Detalle de la Orden</h2>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '10%' }}>
-              <div style={{ display: 'flex', alignItems: 'center', width: '70%' }}>
+  return (
+    <>
+      <div className="wrapper">
+        <div className="materialsContainer">
+          <h2 sclassName="title">Detalle de la Orden</h2>
+          <div className="stateContainer">
+            <div className="selectDiv">
+              <div className="groupDiv">
                 <label style={{ marginRight: '10px' }} >Cambiar de estado:</label>
-                <FormSelect value={detail.state} onChange={handleChangeState} style={{ width: '60%' }}>
+                <FormSelect value={detail.state} onChange={handleChangeState} className="selectStyle">
                   <option value="without_material">Sin material</option>
                   <option value="with_material_but_not_started">Con material, pero no iniciado</option>
                   <option value="in_progress">En progreso</option>
@@ -317,331 +318,334 @@ function OrderDetail() {
                   <option value="incomplete">Incompleto</option>
                 </FormSelect>
               </div>
-              <EditButton2 onClick={handleEditOrder} />
-            </div>
-            <Notification
-              show={notification.show}
-              message={notification.message}
-              onClose={handleCloseNotification}
-            />
-            <div className="detailContainer">
-              <DetailItem label="Cliente" value={detail.client} />
-              <DetailItem label="Orden de compra" value={detail.purchase_order} />
-              <DetailItem label="Nombre" value={detail.name} />
-              <DetailItem label="Cantidad" value={detail.quantity} />
-              <DetailItem label="Fecha de ingreso" value={formatDate(detail.ingresed_at)} />
-              <DetailItem label="Fecha de entrega pactada" value={formatDate(detail.estimated_delivery_date)} />
-              <DetailItem label="Fecha de entrega real" value={formatDate(detail.delivery_at)} />
-              <DetailItem label="Precio unitario" value={ formatPrice(detail.unit_price)} />
-              <DetailItem label="Observaciones" value={detail.comment} />
-              <DetailItem label="Precio total" value= {formatPrice(detail.total_price)} />
-              <DetailItem label="Moneda" value={detail.currency} />
-              <DetailItem label="Estado" value={t(detail.state)} />
-            </div>
-
-            <div style={styles.drawingsContainer}>
-              <div style={styles.headerContainer}>
-
-                <h3 style={styles.sectionTitle}> Planos</h3>
-                <Button style={styles.newDrawButton} onClick={() => { setFileType('drawing'); setshowUploadModal(true); }}>Agregar plano</Button>
-              </div>
-
-              {detail.drawings && detail.drawings.length > 0 && (
-                detail.drawings.map((drawing) => (
-                  <div key={drawing.id} className="drawingItem">
-                    <span>
-                      <FaFilePdf className="icon" />
-                      <a href={drawing.view_url} target="_blank" rel="noopener noreferrer" className="drawingLink">
-                        {drawing.name}
-                      </a>
-                    </span>
-                    <DeleteButton2 onClick={() => { setFileType('drawing'); handleDeleteFile(drawing) }} />
-                  </div>
-                ))
-              )}
+              <EditButton2  onClick={handleEditOrder} />
             </div>
           </div>
+          <Notification
+            show={notification.show}
+            message={notification.message}
+            onClose={handleCloseNotification}
+          />
+          <div className="detailContainer">
+            <DetailItem label="Cliente" value={detail.client} />
+            <DetailItem label="Orden de compra" value={detail.purchase_order} />
+            <DetailItem label="Nombre" value={detail.name} />
+            <DetailItem label="Cantidad" value={detail.quantity} />
+            <DetailItem label="Fecha de ingreso" value={formatDate(detail.ingresed_at)} />
+            <DetailItem label="Fecha de entrega pactada" value={formatDate(detail.estimated_delivery_date)} />
+            <DetailItem label="Fecha de entrega real" value={formatDate(detail.delivery_at)} />
+            <DetailItem label="Precio unitario" value={formatPrice(detail.unit_price)} />
+            <DetailItem label="Observaciones" value={detail.comment} />
+            <DetailItem label="Precio total" value={formatPrice(detail.total_price)} />
+            <DetailItem label="Moneda" value={detail.currency} />
+            <DetailItem label="Estado" value={t(detail.state)} />
+          </div>
 
-          <div style={styles.materialsContainer}>
+          <div style={styles.drawingsContainer}>
             <div style={styles.headerContainer}>
-              <h3 style={styles.sectionTitle}>Materiales</h3>
-              <Button style={styles.newDrawButton} onClick={() => setMaterialFormModal(true)}>Gestionar material</Button>
-            </div>
-            {detail.materials && detail.materials.length > 0 && (
-              <GenericTable
-                fields={fields}
-                elements={detail.materials}
-                viewButton={false}
-              />
-            )}
 
-            <div style={styles.drawingsContainer}>
-              <hr />
-              <div style={styles.headerContainer}>
-                <h3 style={styles.sectionTitle}>Orden de compra</h3>
-                <Button style={styles.newDrawButton} onClick={() => { setFileType('purchaseOrder'); setshowUploadModal(true); }}>Cargar orden</Button>
-              </div>
-              {detail.file_purchase_orders && detail.file_purchase_orders.length > 0 && (
-                detail.file_purchase_orders.map((purchase_order) => (
-                  <div key={purchase_order.id} style={styles.drawingItem}>
-                    <span>
-                      <FaFilePdf style={styles.icon} />
-                      <a href={purchase_order.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                        {purchase_order.name}
-                      </a>
-                    </span>
-                    <DeleteButton2 onClick={() => { setFileType('purchaseOrder'); handleDeleteFile(purchase_order) }} />
-                  </div>
-                ))
-              )}
+              <h3 style={styles.sectionTitle}> Planos</h3>
+              <Button style={styles.newDrawButton} onClick={() => { setFileType('drawing'); setshowUploadModal(true); }}>Agregar plano</Button>
             </div>
 
-
-            <div style={styles.drawingsContainer}>
-              <hr />
-              <div style={styles.headerContainer}>
-                <h3 style={styles.sectionTitle}>Remitos del proveedor</h3>
-                <Button style={styles.newDrawButton} onClick={() => { setFileType('supplierNote'); setshowUploadModal(true); }}>Cargar remito</Button>
-              </div>
-
-              {detail.supplier_delivery_notes && detail.supplier_delivery_notes.length > 0 && (
-                detail.supplier_delivery_notes.map((supplier_note) => (
-                  <div key={supplier_note.id} style={styles.drawingItem}>
-                    <span>
-                      <FaImage style={styles.iconImage} />
-                      <a href={supplier_note.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                        {supplier_note.name}
-                      </a>
-                    </span>
-                    <DeleteButton2 onClick={() => { setFileType('supplierNote'); handleDeleteFile(supplier_note) }} />
-                  </div>
-                ))
-              )}
-            </div>
-
-            <div style={styles.drawingsContainer}>
-              <hr />
-              <div style={styles.headerContainer}>
-                <h3 style={styles.sectionTitle}>Certificados</h3>
-                <Button style={styles.newDrawButton} onClick={() => { setFileType('certificate'); setshowUploadModal(true); }}>Cargar certificado</Button>
-              </div>
-
-              {detail.certificate_of_materials && detail.certificate_of_materials.length > 0 && (
-                detail.certificate_of_materials.map((certificate) => (
-                  <div key={certificate.id} style={styles.drawingItem}>
-                    <span>
-                      <FaImage style={styles.iconImage} />
-                      <a href={certificate.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                        {certificate.name}
-                      </a>
-                    </span>
-                    <DeleteButton2 onClick={() => { setFileType('certificate'); handleDeleteFile(certificate) }} />
-                  </div>
-                ))
-              )}
-            </div>
-
-            <div style={styles.drawingsContainer}>
-              <hr />
-              <div style={styles.headerContainer}>
-                <h3 style={styles.sectionTitle}>Documentos de salida</h3>
-                <Button style={styles.newDrawButton} onClick={() => { setFileType('deliveryNote'); setshowUploadModal(true); }}>Cargar remito</Button>
-              </div>
-
-              {detail.delivery_notes && detail.delivery_notes.length > 0 && (
-                detail.delivery_notes.map((deliveryNote) => (
-                  <div key={deliveryNote.id} style={styles.drawingItem}>
-                    <span>
-                      <FaImage style={styles.iconImage} />
-                      <a href={deliveryNote.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                        {deliveryNote.name}
-                      </a>
-                    </span>
-                    <DeleteButton2 onClick={() => { setFileType('deliveryNote'); handleDeleteFile(deliveryNote) }} />
-                  </div>
-                ))
-              )}
-            </div>
-            <div style={styles.drawingsContainer}>
-              <hr />
-              <div style={styles.headerContainer}>
-                <h3 style={styles.sectionTitle}>Orden de trabajo</h3>
-                <Button style={{ ...styles.newDrawButton, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={handleWorkOrder} disabled={isGenerating}>
-                  {isGenerating ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" style={{ marginRight: "8px" }}></span>
-                      <span>Generando</span>
-                    </>
-                  ) : detail.work_order != null ? (
-                    "Regenerar orden"
-                  ) : (
-
-                    "Generar orden"
-                  )}
-                </Button>
-
-              </div>
-
-              {detail.work_order != null && (
-                <div style={styles.drawingItem}>
+            {detail.drawings && detail.drawings.length > 0 && (
+              detail.drawings.map((drawing) => (
+                <div key={drawing.id} className="drawingItem">
                   <span>
-                    <FaFileExcel style={styles.iconExcel} />
-                    <a href={detail.work_order.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                      {detail.work_order.name}
+                    <FaFilePdf className="icon" />
+                    <a href={drawing.view_url} target="_blank" rel="noopener noreferrer" className="drawingLink">
+                      {drawing.name}
                     </a>
                   </span>
+                  <DeleteButton2 onClick={() => { setFileType('drawing'); handleDeleteFile(drawing) }} />
                 </div>
-              )}
-            </div>
+              ))
+            )}
           </div>
         </div>
 
-        <UploadForm
-          show={showUploadModal}
-          handleClose={handleCloseUploadModal}
-          handleSubmit={uploadFile}
-          isUploading={isUploading}
-        />
+        <div style={styles.materialsContainer}>
+          <div style={styles.headerContainer}>
+            <h3 style={styles.sectionTitle}>Materiales</h3>
+            <Button style={styles.newDrawButton} onClick={() => setMaterialFormModal(true)}>Gestionar material</Button>
+          </div>
+          {detail.materials && detail.materials.length > 0 && (
+            <GenericTable
+              fields={fields}
+              elements={detail.materials}
+              viewButton={false}
+            />
+          )}
 
-        <MaterialForm
-          show={materialFormModal}
-          handleClose={handleCloseMaterialModal}
-          orderID={detail.id}
-        />
+          <div style={styles.drawingsContainer}>
+            <hr />
+            <div style={styles.headerContainer}>
+              <h3 style={styles.sectionTitle}>Orden de compra</h3>
+              <Button style={styles.newDrawButton} onClick={() => { setFileType('purchaseOrder'); setshowUploadModal(true); }}>Cargar orden</Button>
+            </div>
+            {detail.file_purchase_orders && detail.file_purchase_orders.length > 0 && (
+              detail.file_purchase_orders.map((purchase_order) => (
+                <div key={purchase_order.id} style={styles.drawingItem}>
+                  <span>
+                    <FaFilePdf style={styles.icon} />
+                    <a href={purchase_order.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                      {purchase_order.name}
+                    </a>
+                  </span>
+                  <DeleteButton2 onClick={() => { setFileType('purchaseOrder'); handleDeleteFile(purchase_order) }} />
+                </div>
+              ))
+            )}
+          </div>
 
-        <OrderForm
-          show={showOrderForm}
-          handleClose={handleCloseOrderForm}
-          title={'Editar orden'}
-          editOrder={editOrder}
-          nameClient={clientName}
-          orderSelected={selectedOrder}
-        />
 
-        <ConfirmModal
-          show={showConfirmModal}
-          title={titleConfirmModal}
-          content={deleting ? 'Eliminando archivo...' : contentConfirmModal}
-          onConfirm={handleConfirmModalGenearte}
-          onCancel={handleCloseConfirmModal}
-          deleting={deleting}
-        />
+          <div style={styles.drawingsContainer}>
+            <hr />
+            <div style={styles.headerContainer}>
+              <h3 style={styles.sectionTitle}>Remitos del proveedor</h3>
+              <Button style={styles.newDrawButton} onClick={() => { setFileType('supplierNote'); setshowUploadModal(true); }}>Cargar remito</Button>
+            </div>
 
-        <ModalDelivery
-          show={showDeliveryModal}
-          handleClose={handleCloseDeliveryModal}
-          handleSave={handleSaveDeliveryDate}
-          order={detail} />
-      </>
-    );
-  }
+            {detail.supplier_delivery_notes && detail.supplier_delivery_notes.length > 0 && (
+              detail.supplier_delivery_notes.map((supplier_note) => (
+                <div key={supplier_note.id} style={styles.drawingItem}>
+                  <span>
+                    <FaImage style={styles.iconImage} />
+                    <a href={supplier_note.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                      {supplier_note.name}
+                    </a>
+                  </span>
+                  <DeleteButton2 onClick={() => { setFileType('supplierNote'); handleDeleteFile(supplier_note) }} />
+                </div>
+              ))
+            )}
+          </div>
 
-  const DetailItem = ({ label, value }) => (
-    <div style={styles.detailItem}>
-      <span style={styles.label}>{label}:</span>
-      <span style={styles.value}>{value}</span>
-    </div>
+          <div style={styles.drawingsContainer}>
+            <hr />
+            <div style={styles.headerContainer}>
+              <h3 style={styles.sectionTitle}>Certificados</h3>
+              <Button style={styles.newDrawButton} onClick={() => { setFileType('certificate'); setshowUploadModal(true); }}>Cargar certificado</Button>
+            </div>
+
+            {detail.certificate_of_materials && detail.certificate_of_materials.length > 0 && (
+              detail.certificate_of_materials.map((certificate) => (
+                <div key={certificate.id} style={styles.drawingItem}>
+                  <span>
+                    <FaImage style={styles.iconImage} />
+                    <a href={certificate.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                      {certificate.name}
+                    </a>
+                  </span>
+                  <DeleteButton2 onClick={() => { setFileType('certificate'); handleDeleteFile(certificate) }} />
+                </div>
+              ))
+            )}
+          </div>
+
+          <div style={styles.drawingsContainer}>
+            <hr />
+            <div style={styles.headerContainer}>
+              <h3 style={styles.sectionTitle}>Documentos de salida</h3>
+              <Button style={styles.newDrawButton} onClick={() => { setFileType('deliveryNote'); setshowUploadModal(true); }}>Cargar remito</Button>
+            </div>
+
+            {detail.delivery_notes && detail.delivery_notes.length > 0 && (
+              detail.delivery_notes.map((deliveryNote) => (
+                <div key={deliveryNote.id} style={styles.drawingItem}>
+                  <span>
+                    <FaImage style={styles.iconImage} />
+                    <a href={deliveryNote.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                      {deliveryNote.name}
+                    </a>
+                  </span>
+                  <DeleteButton2 onClick={() => { setFileType('deliveryNote'); handleDeleteFile(deliveryNote) }} />
+                </div>
+              ))
+            )}
+          </div>
+          <div style={styles.drawingsContainer}>
+            <hr />
+            <div style={styles.headerContainer}>
+              <h3 style={styles.sectionTitle}>Orden de trabajo</h3>
+              <Button style={{ ...styles.newDrawButton, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={handleWorkOrder} disabled={isGenerating}>
+                {isGenerating ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" style={{ marginRight: "8px" }}></span>
+                    <span>Generando</span>
+                  </>
+                ) : detail.work_order != null ? (
+                  "Regenerar orden"
+                ) : (
+
+                  "Generar orden"
+                )}
+              </Button>
+
+            </div>
+
+            {detail.work_order != null && (
+              <div style={styles.drawingItem}>
+                <span>
+                  <FaFileExcel style={styles.iconExcel} />
+                  <a href={detail.work_order.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
+                    {detail.work_order.name}
+                  </a>
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <UploadForm
+        show={showUploadModal}
+        handleClose={handleCloseUploadModal}
+        handleSubmit={uploadFile}
+        isUploading={isUploading}
+      />
+
+      <MaterialForm
+        show={materialFormModal}
+        handleClose={handleCloseMaterialModal}
+        orderID={detail.id}
+      />
+
+      <OrderForm
+        show={showOrderForm}
+        handleClose={handleCloseOrderForm}
+        title={'Editar orden'}
+        editOrder={editOrder}
+        nameClient={clientName}
+        orderSelected={selectedOrder}
+      />
+
+      <ConfirmModal
+        show={showConfirmModal}
+        title={titleConfirmModal}
+        content={deleting ? 'Eliminando archivo...' : contentConfirmModal}
+        onConfirm={handleConfirmModalGenearte}
+        onCancel={handleCloseConfirmModal}
+        deleting={deleting}
+      />
+
+      <ModalDelivery
+        show={showDeliveryModal}
+        handleClose={handleCloseDeliveryModal}
+        handleSave={handleSaveDeliveryDate}
+        order={detail} />
+    </>
   );
+}
 
-  const styles = {
-    wrapper: {
-      display: "flex",
-      justifyContent: "space-between",
-      maxWidth: "90%",
-      margin: "20px auto",
-      gap: "20px",
-      padding: "20px",
-      backgroundColor: "#f9f9f9",
-      borderRadius: "8px",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    },
-    container: {
-      flex: 1,
-      padding: "20px",
-      backgroundColor: "#ffffff",
-      borderRadius: "8px",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    },
-    materialsContainer: {
-      flex: 1,
-      padding: "20px",
-      backgroundColor: "#ffffff",
-      borderRadius: "8px",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    },
-    title: {
-      textAlign: "center",
-      color: "#333",
-      marginBottom: "20px",
-      fontSize: "28px",
-    },
-    detailContainer: {
-      display: "flex",
-      flexDirection: "column",
-      gap: "10px",
-    },
-    detailItem: {
-      display: "flex",
-      justifyContent: "space-between",
-      padding: "10px",
-      backgroundColor: "#fff",
-      borderRadius: "4px",
-      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-    },
-    label: {
-      fontWeight: "bold",
-      color: "#555",
-    },
-    value: {
-      color: "#555",
-    },
-    drawingsContainer: {
-      marginTop: "20px",
-      marginBottom: '5%'
-    },
-    sectionTitle: {
-      fontSize: "24px",
-      color: "#333",
-      marginBottom: "10px",
-    },
-    drawingItem: {
-      display: "flex",
-      alignItems: "center",
-      marginBottom: "10px",
-      padding: "10px",
-      backgroundColor: "#fff",
-      borderRadius: "4px",
-      justifyContent: "space-between",
-      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-    },
-    icon: {
-      marginRight: "10px",
-      color: "#d32f2f",
-    },
-    iconExcel: {
-      marginRight: "10px",
-      color: "#22d319",
-    },
-    iconImage: {
-      marginRight: "10px",
-      color: "rgb(0, 123, 255)"
-    },
-    drawingLink: {
-      textDecoration: "none",
-      color: "#007bff",
-      fontWeight: "bold",
-    },
-    headerContainer: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: "20px",
-    },
-    newDrawButton: {
-      padding: "8px 20px",
-      fontSize: "16px",
-    },
-  };
+const DetailItem = ({ label, value }) => (
+  <div style={styles.detailItem}>
+    <span style={styles.label}>{label}:</span>
+    <span style={styles.value}>{value}</span>
+  </div>
+);
 
-  export default OrderDetail;
+const styles = {
+  wrapper: {
+    display: "flex",
+    justifyContent: "space-between",
+    maxWidth: "90%",
+    margin: "20px auto",
+    gap: "20px",
+    padding: "20px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+  },
+  container: {
+    flex: 1,
+    padding: "20px",
+    backgroundColor: "#ffffff",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  },
+  materialsContainer: {
+    flex: 1,
+    padding: "20px",
+    backgroundColor: "#ffffff",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  },
+  title: {
+    textAlign: "center",
+    color: "#333",
+    marginBottom: "20px",
+    fontSize: "28px",
+  },
+  detailContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+  },
+  detailItem: {
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "10px",
+    backgroundColor: "#fff",
+    borderRadius: "4px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  },
+  label: {
+    fontWeight: "bold",
+    color: "#555",
+    marginRight: "10px",
+    marginBottom: "2px",
+  },
+  value: {
+    color: "#555",
+  },
+  drawingsContainer: {
+    marginTop: "20px",
+    marginBottom: '6%'
+  },
+  sectionTitle: {
+    fontSize: "24px",
+    color: "#333",
+    marginBottom: "10px",
+  },
+  drawingItem: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "10px",
+    padding: "10px",
+    backgroundColor: "#fff",
+    borderRadius: "4px",
+    justifyContent: "space-between",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  },
+  icon: {
+    marginRight: "10px",
+    color: "#d32f2f",
+  },
+  iconExcel: {
+    marginRight: "10px",
+    color: "#22d319",
+  },
+  iconImage: {
+    marginRight: "10px",
+    color: "rgb(0, 123, 255)"
+  },
+  drawingLink: {
+    textDecoration: "none",
+    color: "#007bff",
+    fontWeight: "bold",
+  },
+  headerContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
+  },
+  newDrawButton: {
+    padding: "8px 20px",
+    fontSize: "16px",
+  },
+};
+
+export default OrderDetail;

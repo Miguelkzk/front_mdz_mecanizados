@@ -9,6 +9,12 @@
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+} @media screen and (max-width: 800px) {
+  .wrapper {
+    max-width: 100%;
+    padding: 10px;
+  }
+
 }
 
 .container {
@@ -25,6 +31,11 @@
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+} @media screen and (max-width: 1300px) {
+  .wrapper {
+    flex-direction: column;
+  }
+
 }
 
 .title {
@@ -38,6 +49,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width:100%;
 }
 
 .detailItem {
@@ -111,4 +123,80 @@
 .newDrawButton {
   padding: 8px 20px;
   font-size: 16px;
+}
+
+.stateContainer {
+  display: flex;
+  align-items: center;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.selectDiv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.selectStyle {
+  width: 60%;
+  max-width: 300px;
+}
+
+.groupDiv {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  margin-right: 10px;
+  width: 70%;
+}
+
+
+@media screen and (max-width: 1300px) {
+  .wrapper {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .stateContainer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .selectDiv {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .selectStyle {
+    width: 100%; /* Hacer que ocupe todo el ancho disponible */
+    margin-bottom: 10px;
+  }
+
+  .groupDiv {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .newDrawButton {
+    width: 100%; /* Botón adaptado para pantallas pequeñas */
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .selectDiv {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .selectStyle {
+    font-size: 14px; /* Texto más pequeño para pantallas pequeñas */
+  }
+
+  .groupDiv {
+    margin-bottom: 10px;
+  }
 }
