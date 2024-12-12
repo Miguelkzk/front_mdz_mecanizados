@@ -342,7 +342,7 @@ function OrderDetail() {
           </div>
 
           <div style={styles.drawingsContainer}>
-            <div style={styles.headerContainer}>
+            <div className="headerContainer">
 
               <h3 style={styles.sectionTitle}> Planos</h3>
               <Button style={styles.newDrawButton} onClick={() => { setFileType('drawing'); setshowUploadModal(true); }}>Agregar plano</Button>
@@ -365,7 +365,7 @@ function OrderDetail() {
         </div>
 
         <div style={styles.materialsContainer}>
-          <div style={styles.headerContainer}>
+          <div className="headerContainer">
             <h3 style={styles.sectionTitle}>Materiales</h3>
             <Button style={styles.newDrawButton} onClick={() => setMaterialFormModal(true)}>Gestionar material</Button>
           </div>
@@ -379,7 +379,7 @@ function OrderDetail() {
 
           <div style={styles.drawingsContainer}>
             <hr />
-            <div style={styles.headerContainer}>
+            <div className="headerContainer">
               <h3 style={styles.sectionTitle}>Orden de compra</h3>
               <Button style={styles.newDrawButton} onClick={() => { setFileType('purchaseOrder'); setshowUploadModal(true); }}>Cargar orden</Button>
             </div>
@@ -401,7 +401,7 @@ function OrderDetail() {
 
           <div style={styles.drawingsContainer}>
             <hr />
-            <div style={styles.headerContainer}>
+            <div className="headerContainer">
               <h3 style={styles.sectionTitle}>Remitos del proveedor</h3>
               <Button style={styles.newDrawButton} onClick={() => { setFileType('supplierNote'); setshowUploadModal(true); }}>Cargar remito</Button>
             </div>
@@ -423,7 +423,7 @@ function OrderDetail() {
 
           <div style={styles.drawingsContainer}>
             <hr />
-            <div style={styles.headerContainer}>
+            <div className="headerContainer">
               <h3 style={styles.sectionTitle}>Certificados</h3>
               <Button style={styles.newDrawButton} onClick={() => { setFileType('certificate'); setshowUploadModal(true); }}>Cargar certificado</Button>
             </div>
@@ -443,10 +443,10 @@ function OrderDetail() {
             )}
           </div>
 
-          <div style={styles.drawingsContainer}>
+          <div className="drawingsContainer">
             <hr />
-            <div style={styles.headerContainer}>
-              <h3 style={styles.sectionTitle}>Documentos de salida</h3>
+            <div className="headerContainer">
+              <h3 className="sectionTitle">Documentos de salida</h3>
               <Button style={styles.newDrawButton} onClick={() => { setFileType('deliveryNote'); setshowUploadModal(true); }}>Cargar remito</Button>
             </div>
 
@@ -464,11 +464,11 @@ function OrderDetail() {
               ))
             )}
           </div>
-          <div style={styles.drawingsContainer}>
+          <div className="drawingsContainer">
             <hr />
-            <div style={styles.headerContainer}>
-              <h3 style={styles.sectionTitle}>Orden de trabajo</h3>
-              <Button style={{ ...styles.newDrawButton, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={handleWorkOrder} disabled={isGenerating}>
+            <div className="headerContainer">
+              <h3 className="sectionTitle">Orden de trabajo</h3>
+              <Button onClick={handleWorkOrder} disabled={isGenerating}>
                 {isGenerating ? (
                   <>
                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" style={{ marginRight: "8px" }}></span>
