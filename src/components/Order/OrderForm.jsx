@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Button, Form, FormControl, Modal, ModalBody, Spinner } from "react-bootstrap";
 import { ClientService } from "../../service/Client";
-import InfoModal from "../infoModal";
 import { OrderService } from "../../service/Order";
 import Notification from "../notification";
 import NameForm from "../Name.form";
+import Select from 'react-select'
+import '../../styles/FormSelect.css'
 
 function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelected }) {
   const [errors, setErrors] = useState({});
@@ -51,12 +52,97 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelec
         comment: editOrder.comment || ''
       });
       setSelectedOrder(orderSelected);
+      let client = {
+        id: editOrder.client_id,
+        name: nameClient
+      }
       setClientName(nameClient);
-      setTimeout(() => {
-        setFilteredClients([]);
-      }, 100);
+      handleClientSelect(client);
     }
-  }, [editOrder]);
+  }, [editOrder, nameClient]);
+
+
+  useEffect(() => {
+    fetchClients();
+  }, []);
+
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setOrder((prevOrder) => ({
+      ...prevOrder,
+      [name]: value
+    }));
+  };
+
+
+
+  const handleClientSelect = (client) => {
+    if (client) {  // Verifica que client no sea null ni undefined
+      setClientName(client.name);
+      setOrder((prevOrder) => ({
+        ...prevOrder,
+        client_id: client.id
+      }));
+    } else {
+      // Si el cliente es null, limpiamos el valor en el estado
+      setClientName('');
+      setOrder((prevOrder) => ({
+        ...prevOrder,
+        client_id: ''
+      }));
+    }
+  }
+
+
+  useEffect(() => {
+    fetchClients();
+  }, [order]);
+
+  const fetchClients = async () => {
+    const callClients = await ClientService.getClients(clientName)
+    if (callClients.length > 0) {
+      callClients.forEach((client) => {
+        client.value = client.id;
+        client.label = client.name;
+      }
+      );
+    }
+    setFilteredClients(callClients); // Filtra la lista conforme el usuario escribe
+  };
+
+  const handleCloseNotification = () => {
+    setNotification({ show: false, message: '' });
+  };
+
+  const handleCloseClientModal = () => {
+    setShowClientForm(false);
+  }
+
+
+  const handleSave = async () => {
+    console.log('order', order)
+
+    if (validateForm()) {
+      try {
+        if (editOrder) {
+          setIsUploading(true);
+          await OrderService.editOrder(order, selectedOrder);
+          setIsUploading(false);
+
+        }
+        else {
+          setIsUploading(true);
+          await OrderService.newOrder(order);
+          setNotification({ show: true, message: 'Se ha creado una nueva orden.' });
+          setIsUploading(false);
+        }
+        handleCloseModal();
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
 
   const validateForm = () => {
     let formErrors = {};
@@ -80,68 +166,6 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelec
     return Object.keys(formErrors).length === 0;
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setOrder((prevOrder) => ({
-      ...prevOrder,
-      [name]: value
-    }));
-  };
-
-  const handleSave = async () => {
-    if (validateForm()) {
-      try {
-        if (editOrder) {
-          setIsUploading(true);
-          await OrderService.editOrder(order, selectedOrder);
-          setIsUploading(false);
-
-        }
-        else {
-          setIsUploading(true);
-          await OrderService.newOrder(order);
-          setNotification({ show: true, message: 'Se ha creado una nueva orden.' });
-          setIsUploading(false);
-        }
-        handleCloseModal();
-      } catch (error) {
-        console.log(error)
-      }
-    }
-  }
-
-  const handleClientSelect = (client) => {
-    setClientName(client.name);
-    setOrder((prevOrder) => ({
-      ...prevOrder,
-      client_id: client.id
-    }));
-
-    setTimeout(() => {
-      setFilteredClients([]);
-    }, 700);
-  }
-
-  useEffect(() => {
-    if (clientName.length > 0) {
-      fetchClients();
-    } else {
-      setFilteredClients([]);
-    }
-  }, [clientName]);
-
-  const fetchClients = async () => {
-    const callClients = await ClientService.getClients(clientName)
-    setFilteredClients(callClients); // Filtra la lista conforme el usuario escribe
-  };
-
-  const handleCloseNotification = () => {
-    setNotification({ show: false, message: '' });
-  };
-
-  const handleCloseClientModal = () => {
-    setShowClientForm(false);
-  }
 
   return (<>
     <Modal show={show} onHide={handleCloseModal} className="modal-lg">
@@ -152,32 +176,26 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelec
         <div style={{ display: 'flex', height: '100%' }}>
           <div style={{ flex: 1, paddingRight: '20px', borderRight: '1px solid #ddd' }}>
             <Form>
-              <Form.Group style={{ flex: 1, marginRight: '10px' }}>
+              <Form.Group className="mt-2">
                 <Form.Label>Buscar cliente</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
+                <Select
                   placeholder="Ingrese el nombre del cliente"
+                  options={filteredClients}
+                  onChange={handleClientSelect}
+                  value={filteredClients.find(client => client.id === order.client_id)}
+                  isClearable={true}
+                  className={errors.client ? "select-error" : ""}
+                  classNamePrefix="select"
                   isInvalid={!!errors.client}
+
                 />
-                {errors.client_id && <Form.Text className="text-danger">{errors.client_id}</Form.Text>}
-
-                {filteredClients.length > 0 && (
-                  <ul style={{ maxHeight: '150px', overflowY: 'auto', backgroundColor: 'white', border: '1px solid #ced4da' }}>
-                    {filteredClients.map((client) => (
-                      <li
-                        key={client.id}
-                        style={{ padding: '5px', cursor: 'pointer' }}
-                        onClick={() => handleClientSelect(client)}
-                      >
-                        {client.name}
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </Form.Group>
-
+              {errors.client &&
+                <>
+                  <Form.Text className="text-danger">{errors.client}</Form.Text>
+                  <br />
+                </>
+              }
               <a
                 role="button"
                 onClick={() => setShowClientForm(true)}
@@ -307,12 +325,12 @@ function OrderForm({ show, handleClose, editOrder, title, nameClient, orderSelec
           <Button onClick={handleSave} disabled={isUploading}>
             {isUploading ? (
               <>
-               <Spinner
-                    animation="border"
-                    size="sm"
-                    style={{marginTop: "8px"}}
-                  />{" "}
-                  Guardando...
+                <Spinner
+                  animation="border"
+                  size="sm"
+                  style={{ marginTop: "8px" }}
+                />{" "}
+                Guardando...
               </>
             ) : (
               'Guardar orden'

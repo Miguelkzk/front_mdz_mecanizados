@@ -6,6 +6,9 @@ import { OrderService } from "../../service/Order";
 import GenericTable from "../GenericTable";
 import ConfirmModal from "../ConfirmModal";
 import NameForm from "../Name.form";
+import Select from 'react-select'
+import { fi } from "date-fns/locale";
+
 
 function MaterialForm({ show, handleClose, orderID }) {
   const [errors, setErrors] = useState({});
@@ -37,6 +40,8 @@ function MaterialForm({ show, handleClose, orderID }) {
   const handleCloseModal = () => {
     handleClose();
     clearForm();
+    setErrors({});
+    setFilteredSuppliers([]);
 
   };
 
@@ -64,17 +69,22 @@ function MaterialForm({ show, handleClose, orderID }) {
   };
 
   const handleSupplierSelect = (supplier) => {
-    setSupplierName(supplier.name);
-    setMaterial((prevMaterial) => ({
-      ...prevMaterial,
-      supplier_id: supplier.id,
-      order_id: orderID
-    }));
+    if (supplier) {
+      setSupplierName(supplier.name);
+      setMaterial((prevMaterial) => ({
+        ...prevMaterial,
+        supplier_id: supplier.id,
+        order_id: orderID
+      }));
+    } else {
+      setSupplierName('');
+      setMaterial((prevMaterial) => ({
+        ...prevMaterial,
+        supplier_id: '',
+      }));
+    }
 
-    // setTimeout para asegurar que procese el cambio
-    setTimeout(() => {
-      setFilteredSuppliers([]);
-    }, 700);
+
   };
 
   const validateForm = () => {
@@ -90,16 +100,24 @@ function MaterialForm({ show, handleClose, orderID }) {
   };
 
   useEffect(() => {
-    if (supplierName.length > 0) {
+    if (show) {
       fetchSuppliers();
-    } else {
-      setFilteredSuppliers([]);
     }
-  }, [supplierName]);
+  }, [show, filteredSuppliers]);
+
 
   const fetchSuppliers = async () => {
-    const callSuppliers = await SupplierService.getSuppliers(supplierName);
-    setFilteredSuppliers(callSuppliers);
+    try {
+      const callSuppliers = await SupplierService.getSuppliers(supplierName);
+      const suppliersWithOptions = callSuppliers.map((supplier) => ({
+        ...supplier,
+        value: supplier.id,
+        label: supplier.name,
+      }));
+      setFilteredSuppliers(suppliersWithOptions);
+    } catch (error) {
+      console.error("Error fetching suppliers:", error);
+    }
   };
 
   const handleSave = async () => {
@@ -112,6 +130,11 @@ function MaterialForm({ show, handleClose, orderID }) {
         }
         fetchMaterials();
         clearForm();
+        setErrors({});
+        setSupplierName('');
+        setFilteredSuppliers([]);
+
+        set
       } catch (error) {
         console.log(error)
       }
@@ -129,6 +152,7 @@ function MaterialForm({ show, handleClose, orderID }) {
       if (orderID) {
         const materialsData = await OrderService.getMaterials(orderID);
         setMaterials(materialsData);
+        fetchSuppliers();
       }
     } catch (error) {
       console.log("Error fetching materials:", error);
@@ -186,139 +210,131 @@ function MaterialForm({ show, handleClose, orderID }) {
 
   return (
     <>
-    <Modal show={show} onHide={handleCloseModal} className="modal-lg">
-      <Modal.Header closeButton className="text-center">
-        <Modal.Title style={{ textAlign: 'center', width: '100%' }}>Ingreso de material</Modal.Title>
-      </Modal.Header>
-      <ModalBody>
-        <div style={{ display: 'flex', height: '100%' }}>
-          <div style={{ flex: 1, paddingRight: '20px', borderRight: '1px solid #ddd' }}>
-            <Form>
-              <Form.Group className="mt-2">
-                <Form.Label>Proveedor</Form.Label>
-                <FormControl
-                  type="text"
-                  placeholder="Ingrese el nombre del proveedor"
-                  value={supplierName}
-                  onChange={(e) => setSupplierName(e.target.value)}
-                  isInvalid={!!errors.supplier_id}
-                />
-                {errors.supplier_id && <Form.Text className="text-danger">{errors.supplier_id}</Form.Text>}
-
-                {filteredSuppliers.length > 0 && (
-                  <ul style={{ maxHeight: '150px', overflowY: 'auto', backgroundColor: 'white', border: '1px solid #ced4da' }}>
-                    {filteredSuppliers.map((supplier) => (
-                      <li
-                        key={supplier.id}
-                        style={{ padding: '5px', cursor: 'pointer' }}
-                        onClick={() => handleSupplierSelect(supplier)}
-                      >
-                        {supplier.name}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </Form.Group>
-              <a
-                role="button"
-                onClick={()=> setShowSupllierForm(true)}
-                style={{
-                  textDecoration: 'underline',
-                  color: '#007bff',
-                  cursor: 'pointer',
-                }}
-              >
-                ¿Nuevo proveedor?
-              </a>
+      <Modal show={show} onHide={handleCloseModal} className="modal-lg">
+        <Modal.Header closeButton className="text-center">
+          <Modal.Title style={{ textAlign: 'center', width: '100%' }}>Ingreso de material</Modal.Title>
+        </Modal.Header>
+        <ModalBody>
+          <div style={{ display: 'flex', height: '100%' }}>
+            <div style={{ flex: 1, paddingRight: '20px', borderRight: '1px solid #ddd' }}>
+              <Form>
+                <Form.Group className="mt-2">
+                  <Form.Label>Buscar proveedor</Form.Label>
+                  <Select
+                    placeholder="Ingrese el nombre del proveedor"
+                    options={filteredSuppliers}
+                    onChange={handleSupplierSelect}
+                    value={filteredSuppliers.find((supplier) => supplier.value === material.supplier_id) || null}
+                    isClearable={true}
+                    isInvalid={!!errors.supplier_id}
+                  />
+                </Form.Group>
+                {errors.supplier_id &&
+                  <>
+                    <Form.Text className="text-danger">{errors.supplier_id}</Form.Text>
+                    <br />
+                  </>
+                }
+                <a
+                  role="button"
+                  onClick={() => setShowSupllierForm(true)}
+                  style={{
+                    textDecoration: 'underline',
+                    color: '#007bff',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ¿Nuevo proveedor?
+                </a>
 
 
-              <Form.Group className="mt-2">
-                <Form.Label>Descripcion</Form.Label>
-                <FormControl
-                  type="text"
-                  placeholder="Ingrese la descripción del material"
-                  name="description"
-                  value={material.description}
-                  onChange={handleInputChange}
-                  isInvalid={!!errors.description}
-                />
-                {errors.description && <Form.Text className="text-danger">{errors.description}</Form.Text>}
-              </Form.Group>
+                <Form.Group className="mt-2">
+                  <Form.Label>Descripcion</Form.Label>
+                  <FormControl
+                    type="text"
+                    placeholder="Ingrese la descripción del material"
+                    name="description"
+                    value={material.description}
+                    onChange={handleInputChange}
+                    isInvalid={!!errors.description}
+                  />
+                  {errors.description && <Form.Text className="text-danger">{errors.description}</Form.Text>}
+                </Form.Group>
 
-              <Form.Group className="mt-2">
-                <Form.Label>Cantidad</Form.Label>
-                <FormControl
-                  type="number"
-                  placeholder="Ingrese la cantidad del material"
-                  name="quantity"
-                  value={material.quantity}
-                  onChange={handleInputChange}
-                  isInvalid={!!errors.quantity}
-                  min="0"
-                />
-                {errors.quantity && <Form.Text className="text-danger">{errors.quantity}</Form.Text>}
-              </Form.Group>
-            </Form>
+                <Form.Group className="mt-2">
+                  <Form.Label>Cantidad</Form.Label>
+                  <FormControl
+                    type="number"
+                    placeholder="Ingrese la cantidad del material"
+                    name="quantity"
+                    value={material.quantity}
+                    onChange={handleInputChange}
+                    isInvalid={!!errors.quantity}
+                    min="0"
+                  />
+                  {errors.quantity && <Form.Text className="text-danger">{errors.quantity}</Form.Text>}
+                </Form.Group>
+              </Form>
+            </div>
+            <div style={{ flex: 1, paddingLeft: '20px' }}>
+              <Form>
+                <Form.Group className="mt-2">
+                  <Form.Label>Remito del proveedor</Form.Label>
+                  <FormControl
+                    type="text"
+                    placeholder="Ingrese el n­úmero de remito"
+                    name="supplier_note"
+                    value={material.supplier_note}
+                    onChange={handleInputChange}
+                    isInvalid={!!errors.description}
+                  />
+                  {errors.description && <Form.Text className="text-danger">{errors.description}</Form.Text>}
+                </Form.Group>
+
+                <Form.Group className="mt-2">
+                  <Form.Label>Fecha de ingreso</Form.Label>
+                  <Form.Control
+                    type="date"
+                    name="ingresed_at"
+                    value={material.ingresed_at}
+                    onChange={handleInputChange}
+                    isInvalid={!!errors.ingresed_at}
+                  />
+                  {errors.ingresed_at && <Form.Text className="text-danger">{errors.ingresed_at}</Form.Text>}
+                </Form.Group>
+              </Form>
+            </div>
           </div>
-          <div style={{ flex: 1, paddingLeft: '20px' }}>
-            <Form>
-              <Form.Group className="mt-2">
-                <Form.Label>Remito del proveedor</Form.Label>
-                <FormControl
-                  type="text"
-                  placeholder="Ingrese el n­úmero de remito"
-                  name="supplier_note"
-                  value={material.supplier_note}
-                  onChange={handleInputChange}
-                  isInvalid={!!errors.description}
-                />
-                {errors.description && <Form.Text className="text-danger">{errors.description}</Form.Text>}
-              </Form.Group>
-
-              <Form.Group className="mt-2">
-                <Form.Label>Fecha de ingreso</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="ingresed_at"
-                  value={material.ingresed_at}
-                  onChange={handleInputChange}
-                  isInvalid={!!errors.ingresed_at}
-                />
-                {errors.ingresed_at && <Form.Text className="text-danger">{errors.ingresed_at}</Form.Text>}
-              </Form.Group>
-            </Form>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2%' }}>
+            <Button onClick={handleSave}>Guardar material</Button>
           </div>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2%' }}>
-          <Button onClick={handleSave}>Guardar material</Button>
-        </div>
-        <hr />
-        <GenericTable
-          fields={fields}
-          elements={materials}
-          editButton={true}
-          deleteButton={true}
-          editElement={editMaterial}
-          deleteElement={deleteMaterial}
-        />
+          <hr />
+          <GenericTable
+            fields={fields}
+            elements={materials}
+            editButton={true}
+            deleteButton={true}
+            editElement={editMaterial}
+            deleteElement={deleteMaterial}
+          />
 
-        <ConfirmModal
-          show={showDeleteModal}
-          handleClose={handleCloseConfirmModal}
-          title={'Confirmar eliminación'}
-          content={`¿Seguro que desea eliminar el material ${materialName} ?`}
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCloseConfirmModal}
+          <ConfirmModal
+            show={showDeleteModal}
+            handleClose={handleCloseConfirmModal}
+            title={'Confirmar eliminación'}
+            content={`¿Seguro que desea eliminar el material ${materialName} ?`}
+            onConfirm={handleConfirmDelete}
+            onCancel={handleCloseConfirmModal}
 
-        />
-    <NameForm
-    show = {showSupplierForm}
-    handleClose={handleCloseSupplerModal}
-    title={'Nuevo proveedor'}
-    type={'supplier'}
-    />
-      </ModalBody>
-    </Modal>
+          />
+          <NameForm
+            show={showSupplierForm}
+            handleClose={handleCloseSupplerModal}
+            title={'Nuevo proveedor'}
+            type={'supplier'}
+          />
+        </ModalBody>
+      </Modal>
 
     </>
 
