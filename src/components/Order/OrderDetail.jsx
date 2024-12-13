@@ -300,6 +300,13 @@ function OrderDetail() {
   }
 
 
+  const formatName = (name) => {
+    const mid = Math.floor(name.length / 2);
+    const start = name.slice(0, mid);
+    const end = name.slice(mid);
+    return start + ' ' + end;
+  }
+
   return (
     <>
       <div className="wrapper">
@@ -345,7 +352,7 @@ function OrderDetail() {
             <div className="headerContainer">
 
               <h3 style={styles.sectionTitle}> Planos</h3>
-              <Button style={styles.newDrawButton} onClick={() => { setFileType('drawing'); setshowUploadModal(true); }}>Agregar plano</Button>
+              <Button className="newButton" onClick={() => { setFileType('drawing'); setshowUploadModal(true); }}>Agregar plano</Button>
             </div>
 
             {detail.drawings && detail.drawings.length > 0 && (
@@ -354,7 +361,7 @@ function OrderDetail() {
                   <span>
                     <FaFilePdf className="icon" />
                     <a href={drawing.view_url} target="_blank" rel="noopener noreferrer" className="drawingLink">
-                      {drawing.name}
+                      {formatName(drawing.name)}
                     </a>
                   </span>
                   <DeleteButton2 onClick={() => { setFileType('drawing'); handleDeleteFile(drawing) }} />
@@ -367,7 +374,7 @@ function OrderDetail() {
         <div style={styles.materialsContainer}>
           <div className="headerContainer">
             <h3 style={styles.sectionTitle}>Materiales</h3>
-            <Button style={styles.newDrawButton} onClick={() => setMaterialFormModal(true)}>Gestionar material</Button>
+            <Button className="newButton"onClick={() => setMaterialFormModal(true)}>Gestionar material</Button>
           </div>
           {detail.materials && detail.materials.length > 0 && (
             <GenericTable
@@ -381,7 +388,7 @@ function OrderDetail() {
             <hr />
             <div className="headerContainer">
               <h3 style={styles.sectionTitle}>Orden de compra</h3>
-              <Button style={styles.newDrawButton} onClick={() => { setFileType('purchaseOrder'); setshowUploadModal(true); }}>Cargar orden</Button>
+              <Button className="newButton"onClick={() => { setFileType('purchaseOrder'); setshowUploadModal(true); }}>Cargar orden</Button>
             </div>
             {detail.file_purchase_orders && detail.file_purchase_orders.length > 0 && (
               detail.file_purchase_orders.map((purchase_order) => (
@@ -389,7 +396,7 @@ function OrderDetail() {
                   <span>
                     <FaFilePdf style={styles.icon} />
                     <a href={purchase_order.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                      {purchase_order.name}
+                      {formatName(purchase_order.name)}
                     </a>
                   </span>
                   <DeleteButton2 onClick={() => { setFileType('purchaseOrder'); handleDeleteFile(purchase_order) }} />
@@ -403,7 +410,7 @@ function OrderDetail() {
             <hr />
             <div className="headerContainer">
               <h3 style={styles.sectionTitle}>Remitos del proveedor</h3>
-              <Button style={styles.newDrawButton} onClick={() => { setFileType('supplierNote'); setshowUploadModal(true); }}>Cargar remito</Button>
+              <Button className="newButton" onClick={() => { setFileType('supplierNote'); setshowUploadModal(true); }}>Cargar remito</Button>
             </div>
 
             {detail.supplier_delivery_notes && detail.supplier_delivery_notes.length > 0 && (
@@ -412,7 +419,7 @@ function OrderDetail() {
                   <span>
                     <FaImage style={styles.iconImage} />
                     <a href={supplier_note.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                      {supplier_note.name}
+                      {formatName(supplier_note.name)}
                     </a>
                   </span>
                   <DeleteButton2 onClick={() => { setFileType('supplierNote'); handleDeleteFile(supplier_note) }} />
@@ -425,7 +432,7 @@ function OrderDetail() {
             <hr />
             <div className="headerContainer">
               <h3 style={styles.sectionTitle}>Certificados</h3>
-              <Button style={styles.newDrawButton} onClick={() => { setFileType('certificate'); setshowUploadModal(true); }}>Cargar certificado</Button>
+              <Button className="newButton" onClick={() => { setFileType('certificate'); setshowUploadModal(true); }}>Cargar certificado</Button>
             </div>
 
             {detail.certificate_of_materials && detail.certificate_of_materials.length > 0 && (
@@ -434,7 +441,7 @@ function OrderDetail() {
                   <span>
                     <FaImage style={styles.iconImage} />
                     <a href={certificate.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                      {certificate.name}
+                      {formatName(certificate.name)}
                     </a>
                   </span>
                   <DeleteButton2 onClick={() => { setFileType('certificate'); handleDeleteFile(certificate) }} />
@@ -446,8 +453,8 @@ function OrderDetail() {
           <div className="drawingsContainer">
             <hr />
             <div className="headerContainer">
-              <h3 className="sectionTitle">Documentos de salida</h3>
-              <Button style={styles.newDrawButton} onClick={() => { setFileType('deliveryNote'); setshowUploadModal(true); }}>Cargar remito</Button>
+              <h3  style={styles.sectionTitle}>Documentos de salida</h3>
+              <Button className="newButton" onClick={() => { setFileType('deliveryNote'); setshowUploadModal(true); }}>Cargar remito</Button>
             </div>
 
             {detail.delivery_notes && detail.delivery_notes.length > 0 && (
@@ -456,7 +463,7 @@ function OrderDetail() {
                   <span>
                     <FaImage style={styles.iconImage} />
                     <a href={deliveryNote.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
-                      {deliveryNote.name}
+                      {formatName(deliveryNote.name)}
                     </a>
                   </span>
                   <DeleteButton2 onClick={() => { setFileType('deliveryNote'); handleDeleteFile(deliveryNote) }} />
@@ -467,8 +474,8 @@ function OrderDetail() {
           <div className="drawingsContainer">
             <hr />
             <div className="headerContainer">
-              <h3 className="sectionTitle">Orden de trabajo</h3>
-              <Button onClick={handleWorkOrder} disabled={isGenerating}>
+              <h3 style={styles.sectionTitle} >Orden de trabajo</h3>
+              <Button className="newButton" onClick={handleWorkOrder} disabled={isGenerating}>
                 {isGenerating ? (
                   <>
                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" style={{ marginRight: "8px" }}></span>
@@ -605,7 +612,7 @@ const styles = {
     marginBottom: '6%'
   },
   sectionTitle: {
-    fontSize: "24px",
+    fontSize: "28px",
     color: "#333",
     marginBottom: "10px",
   },
