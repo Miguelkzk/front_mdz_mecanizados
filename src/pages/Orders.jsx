@@ -29,7 +29,7 @@ function Orders() {
 
   // Se ejecuta cuando cambian los filtros o la página
   useEffect(() => {
-    fetchOrders(currentPage);  // Asegúrate de pasar currentPage
+    fetchOrders(currentPage);
   }, [filterState, purchaseOrder, clientName, orderName, currentPage]);
 
   const fetchOrders = async (page) => {

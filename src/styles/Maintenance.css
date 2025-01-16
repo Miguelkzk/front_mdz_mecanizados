@@ -1,0 +1,91 @@
+.headerGroup {
+  display: flex;
+  justify-content: center
+}
+.headerContainerMaintenance{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.titleMaintenance{
+  width: 100%;
+  text-align: center;
+}
+
+.buttonGroupMaintenance{
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.newButtonMaintenance{
+  margin-right: 10px;
+}
+
+
+.ContainerGroup {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ContainerFilter {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  width: 23%;
+}
+.tableContainer {
+  overflow-x: auto;
+}
+
+.periodDiv{
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+
+@media (max-width: 1150px) {
+  .ContainerGroup {
+    width: 100%;
+  }
+}
+
+@media (max-width: 800px) {
+
+
+  .ContainerGroup {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ContainerFilter {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .buttonGroup {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .tableContainer {
+    font-size: 14px;
+  }
+
+  .ContainerGroup{
+    width: 100%;
+  }
+
+  .ContainerFilter{
+    margin-top: 2%;
+  }
+
+
+}

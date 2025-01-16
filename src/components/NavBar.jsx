@@ -55,6 +55,9 @@ function NavBar() {
             <Nav.Link href='/profits' style={styles.navLinks}>
               {t('Finanzas')}
             </Nav.Link>
+            <Nav.Link href='/machines' style={styles.navLinks}>
+              {t('Mantenimiento')}
+            </Nav.Link>
           </Nav>
 
           {user && (

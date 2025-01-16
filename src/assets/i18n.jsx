@@ -30,6 +30,13 @@ const resources = {
       'amount_ars': 'Monto en ARS',
       'total_month': 'Total del mes',
       'exchange_rate': 'Tasa de cambio USD/ARS',
+      'routine': 'Rutina',
+      'brand': 'Marca',
+      'model': 'Modelo',
+      'horsepower': 'Potencia (HP)',
+      'corrective': 'Correctivo',
+      'preventive': 'Preventivo',
+
     }
   }
 };
