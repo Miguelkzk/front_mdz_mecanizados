@@ -1,7 +1,12 @@
 import { BASE_URL } from './config';
+import {getHeaders, handleResponse } from './apiUtils';
+
+
 export const MachineService = {
   getMachines: async () => {
-    const response = await fetch(`${BASE_URL}/machines`);
+    const response = await fetch(`${BASE_URL}/machines`,{
+      headers:  getHeaders()
+    });
     const data = await response.json();
     return data;
   },
@@ -14,7 +19,9 @@ export const MachineService = {
 
     const queryString = new URLSearchParams(queryParams).toString();
 
-    const response = await fetch(`${BASE_URL}/machines/${id}/show_maintenances?${queryString}`);
+    const response = await fetch(`${BASE_URL}/machines/${id}/show_maintenances?${queryString}`,{
+      headers: getHeaders(),
+    });
     const data = await response.json();
     return data;
   },
@@ -33,6 +40,9 @@ export const MachineService = {
     const response = await fetch(`${BASE_URL}/maintenances/upload`, {
       method: "POST",
       body: formData,
+      headers: {
+        Authorization: localStorage.getItem("authToken"),
+      }
     });
 
     if (!response.ok) {
@@ -59,9 +69,7 @@ export const MachineService = {
     try {
       const response = await fetch(`${BASE_URL}/machines/${id}/${route}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getHeaders(),
         body: JSON.stringify({ month, year, frecuency }),
       });
 
@@ -88,6 +96,36 @@ export const MachineService = {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error:', error);
+    }
+  }, deleteMaintenance: async (maintenance_id) => {
+    const response = await fetch(`${BASE_URL}/maintenances/${maintenance_id}`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al eliminar el mantenimiento');
+    }
+  }, newMachine : async (machine) => {
+    const response = await fetch(`${BASE_URL}/machines`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ machine }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al guardar la máquina');
+    }
+  }, editMachine : async (id, machine) => {
+    console.log('machine:', machine);
+    const response = await fetch(`${BASE_URL}/machines/${id}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ machine }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error al editar la máquina');
     }
   }
 

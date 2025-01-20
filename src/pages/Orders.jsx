@@ -56,7 +56,7 @@ function Orders() {
 
   const handleCloseModal = () => {
     setShowForm(false);
-    fetchOrders(currentPage);  // Volver a la página actual al cerrar el modal
+    fetchOrders(currentPage);
   };
 
   const goToNextPage = () => {

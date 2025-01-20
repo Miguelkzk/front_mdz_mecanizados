@@ -36,7 +36,9 @@ const resources = {
       'horsepower': 'Potencia (HP)',
       'corrective': 'Correctivo',
       'preventive': 'Preventivo',
-
+      'routine_detail': 'Detalle preventivo',
+      'preventive_detail_biannual': 'Detalle preventivo semestral / trimestral',
+      'preventive_detail_annual': 'Detalle preventivo anual',
     }
   }
 };

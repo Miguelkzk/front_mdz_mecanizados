@@ -9,6 +9,8 @@ import MaintenanceForm from "./MaintenanceForm";
 import { useTranslation } from "react-i18next";
 import '../../styles/Maintenance.css';
 import { set } from "date-fns";
+import ConfirmModal from "../ConfirmModal";
+import { se } from "date-fns/locale";
 
 
 function MaintenanceIndex() {
@@ -19,6 +21,11 @@ function MaintenanceIndex() {
   const [titleModal, setTitleModal] = useState('');
   const [isUpload, setIsUpload] = useState(false);
   const { t } = useTranslation();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [titleConfirmModal, setTitleConfirmModal] = useState('');
+  const [contentConfirmModal, setContentConfirmModal] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  const [selectedMaintenance, setSelectedMaintenance] = useState(null);
   const [filters, setFilters] = useState({
     name_cont: '',
     filter_by_issue_date_month: '',
@@ -36,7 +43,7 @@ function MaintenanceIndex() {
 
   useEffect(() => {
     fetchMaintenance();
-  },[filters]);
+  }, [filters]);
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -70,6 +77,35 @@ function MaintenanceIndex() {
     }));
   };
 
+  const handleDelete = (maintenance) => {
+    setTitleConfirmModal('Eliminar archivo');
+    setContentConfirmModal(`¿Está seguro que desea eliminar el archivo ${maintenance.name}?`);
+    setSelectedMaintenance(maintenance);
+    setShowConfirmModal(true);
+  }
+
+  const handleConfirmModalGenearte = async () => {
+    setDeleting(true);
+    try {
+      await MachineService.deleteMaintenance(selectedMaintenance.id);
+      fetchMaintenance();
+      setShowConfirmModal(false);
+    }
+    catch (error) {
+      console.log(error);
+    }
+    finally {
+      setDeleting(false);
+    }
+    handleCloseConfirmModal();
+  }
+
+  const handleCloseConfirmModal = () => {
+    setShowConfirmModal(false);
+    setDeleting(false);
+    setSelectedMaintenance(null);
+  }
+
   return (
     <>
       <div className="container">
@@ -87,35 +123,35 @@ function MaintenanceIndex() {
           <div className="ContainerGroup">
             <div className="ContainerFilter">
               <label>Filtrar por archivo:</label>
-              <Form.Control type="text" placeholder="Nombre del archivo" value={filters.name_cont} name="name_cont" onChange = {handleChange} />
+              <Form.Control type="text" placeholder="Nombre del archivo" value={filters.name_cont} name="name_cont" onChange={handleChange} />
             </div>
 
             <div className="ContainerFilter">
               <label>Filtrar por mes</label>
               <Form.Select
-                    value={filters.filter_by_issue_date_month}
-                    onChange={handleChange}
-                    name="filter_by_issue_date_month"
-                  >
-                    <option value="">--Seleccionar mes--</option>
-                    <option value="01">Enero</option>
-                    <option value="02">Febrero</option>
-                    <option value="03">Marzo</option>
-                    <option value="04">Abril</option>
-                    <option value="05">Mayo</option>
-                    <option value="06">Junio</option>
-                    <option value="07">Julio</option>
-                    <option value="08">Agosto</option>
-                    <option value="09">Septiembre</option>
-                    <option value="10">Octubre</option>
-                    <option value="11">Noviembre</option>
-                    <option value="12">Diciembre</option>
-                  </Form.Select>
+                value={filters.filter_by_issue_date_month}
+                onChange={handleChange}
+                name="filter_by_issue_date_month"
+              >
+                <option value="">--Seleccionar mes--</option>
+                <option value="01">Enero</option>
+                <option value="02">Febrero</option>
+                <option value="03">Marzo</option>
+                <option value="04">Abril</option>
+                <option value="05">Mayo</option>
+                <option value="06">Junio</option>
+                <option value="07">Julio</option>
+                <option value="08">Agosto</option>
+                <option value="09">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+              </Form.Select>
             </div>
 
             <div className="ContainerFilter">
               <label>Filtrar por año</label>
-              <Form.Control type="text" placeholder="aaaa" value={filters.filter_by_issue_date_year} name = "filter_by_issue_date_year" onChange={handleChange}/>
+              <Form.Control type="text" placeholder="aaaa" value={filters.filter_by_issue_date_year} name="filter_by_issue_date_year" onChange={handleChange} />
             </div>
 
             <div className="ContainerFilter">
@@ -140,30 +176,31 @@ function MaintenanceIndex() {
                 <th>Fecha</th>
                 <th>Tipo mantenimiento</th>
                 <th></th>
-                <th></th>
               </tr>
             </thead>
             <tbody>
-              {maintenances.map((maintenance) => (
-                <tr key={maintenance.id}>
-                  <td>
-                    <span>
-                      <FaFilePdf style={{ color: "red", marginRight: "10px" }} />
-                      <a href={maintenance.view_url} target="_blank" rel="noopener noreferrer">
-                        {maintenance.name}
-                      </a>
-                    </span>
-                  </td>
-                  <td>{formatDate(maintenance.issue_date)}</td>
-                  <td>{t(maintenance.type_maintenance)}</td>
-                  <td>
-                    <EditButton />
-                  </td>
-                  <td>
-                    <DeleteButton />
-                  </td>
-                </tr>
-              ))}
+              {maintenances.length > 0 && (<>
+
+                {maintenances.map((maintenance) => (
+                  <tr key={maintenance.id}>
+                    <td>
+                      <span>
+                        <FaFilePdf style={{ color: "red", marginRight: "10px" }} />
+                        <a href={maintenance.view_url} target="_blank" rel="noopener noreferrer">
+                          {maintenance.name}
+                        </a>
+                      </span>
+                    </td>
+                    <td>{formatDate(maintenance.issue_date)}</td>
+                    <td>{t(maintenance.type_maintenance)}</td>
+
+                    <td>
+                      <DeleteButton onClick={() => { handleDelete(maintenance) }} />
+                    </td>
+                  </tr>
+                ))}
+
+              </>)}
             </tbody>
           </Table>
         </div>
@@ -175,6 +212,15 @@ function MaintenanceIndex() {
         machine={machine}
         title={titleModal}
         isUpload={isUpload}
+      />
+
+      <ConfirmModal
+        show={showConfirmModal}
+        title={titleConfirmModal}
+        content={deleting ? 'Eliminando archivo...' : contentConfirmModal}
+        onConfirm={handleConfirmModalGenearte}
+        onCancel={handleCloseConfirmModal}
+        deleting={deleting}
       />
     </>
   );
