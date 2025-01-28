@@ -1,0 +1,56 @@
+/* Estilo general para el contenedor del calendario */
+
+
+/* Encabezados del calendario (meses, días) */
+.fc-multimonth-header  {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333333 !important;
+  text-transform: capitalize;
+}
+
+
+.fc-col-header-cell-cushion{
+  color: #0d0d0d !important;
+  text-decoration: none !important;
+}
+
+
+
+/* Estilo de las celdas del calendario */
+.fc-daygrid-day {
+  border: 1px solid #100f0f;
+}
+
+.fc-daygrid-day.fc-day-today {
+  background-color: #101010;
+}
+
+.fc-daygrid-event:hover {
+  background-color: #0056b3;
+}
+
+/* Personalización de la vista multi-mes */
+.fc-multimonth-month {
+  padding: 10px;
+}
+
+.fc-multimonth-month table {
+
+  overflow: hidden;
+}
+
+/* Estilo general de texto */
+.fc-col-header-cell {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #555555;
+}
+
+.fc-daygrid-day-number {
+  font-size: 0.8rem;
+  color: #5e5858;
+  font-weight: 600;
+  text-decoration: none;
+}
+

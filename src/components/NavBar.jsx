@@ -55,9 +55,22 @@ function NavBar() {
             <Nav.Link href='/profits' style={styles.navLinks}>
               {t('Finanzas')}
             </Nav.Link>
-            <Nav.Link href='/machines' style={styles.navLinks}>
-              {t('Mantenimiento')}
-            </Nav.Link>
+            <Nav className="ml-auto">
+
+              <NavDropdown
+                title={<span style={{ color: 'white', fontSize: '20px' }}>Mantenimiento</span>}
+                id="basic-nav-dropdown"
+                align="end"
+                menuVariant="dark"
+              >
+                <NavDropdown.Item href="/machines">Máquinas</NavDropdown.Item>
+                <NavDropdown.Item href="/maintenance-plan">Plan de mantenimiento</NavDropdown.Item>
+              </NavDropdown>
+            </Nav>
+
+
+
+
           </Nav>
 
           {user && (
@@ -86,7 +99,7 @@ function NavBar() {
 
 export default NavBar;
 const styles = {
-  navLinks : {
+  navLinks: {
     cursor: "pointer",
     color: "white",
     fontSize: "20px"

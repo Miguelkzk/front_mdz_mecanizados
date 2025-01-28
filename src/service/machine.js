@@ -1,12 +1,12 @@
 import { BASE_URL } from './config';
 import {getHeaders, handleResponse } from './apiUtils';
 
-
 export const MachineService = {
   getMachines: async () => {
     const response = await fetch(`${BASE_URL}/machines`,{
       headers:  getHeaders()
     });
+
     const data = await response.json();
     return data;
   },
@@ -19,8 +19,8 @@ export const MachineService = {
 
     const queryString = new URLSearchParams(queryParams).toString();
 
-    const response = await fetch(`${BASE_URL}/machines/${id}/show_maintenances?${queryString}`,{
-      headers: getHeaders(),
+    const response = await fetch(`${BASE_URL}/machines/${id}/show_maintenances?${queryString}`, {
+      headers: getHeaders()
     });
     const data = await response.json();
     return data;
