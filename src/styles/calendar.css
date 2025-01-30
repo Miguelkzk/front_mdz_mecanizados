@@ -28,6 +28,12 @@
 
 .fc-daygrid-event:hover {
   background-color: #0056b3;
+  cursor: pointer !important;
+}
+
+.fc-button,
+.fc-button-primary {
+  cursor: pointer !important;
 }
 
 /* Personalización de la vista multi-mes */

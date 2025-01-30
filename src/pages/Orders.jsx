@@ -29,7 +29,7 @@ function Orders() {
 
   // Se ejecuta cuando cambian los filtros o la página
   useEffect(() => {
-    fetchOrders(currentPage);
+    fetchOrders(currentPage);  // Asegúrate de pasar currentPage
   }, [filterState, purchaseOrder, clientName, orderName, currentPage]);
 
   const fetchOrders = async (page) => {
@@ -56,7 +56,7 @@ function Orders() {
 
   const handleCloseModal = () => {
     setShowForm(false);
-    fetchOrders(currentPage);
+    fetchOrders(currentPage);  // Volver a la página actual al cerrar el modal
   };
 
   const goToNextPage = () => {

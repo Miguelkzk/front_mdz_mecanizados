@@ -1,4 +1,5 @@
-import MyCalendar1 from "../components/Calendar";
+import MyCalendar1 from "../components/MyCalendar1";
+
 
 function MaintenancePlan() {
   return (

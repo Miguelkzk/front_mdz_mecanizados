@@ -9,10 +9,9 @@ import ProtectedRoute from '../components/ProtectedRoute';
 import Register from '../pages/register';
 import Remunerations from '../pages/Remunerations';
 import RemunerationDetail from '../components/RemunerationDetail';
+import MaintenancePlan from '../pages/Maintenance_plan';
 import Machines from '../pages/Machines';
 import MaintenanceIndex from '../components/maintenance/MaintenanceIndex';
-import MyCalendar1 from '../components/Calendar';
-import MaintenancePlan from '../pages/Maintenance_plan';
 
 const AppRoutes = () => {
   const location = useLocation(); // Obtener la ubicación actual
@@ -29,12 +28,9 @@ const AppRoutes = () => {
         <Route path="/register" element={<ProtectedRoute element={Register} />} />
         <Route path="/profits" element={<ProtectedRoute element={Remunerations} />} />
         <Route path='/profit-detail' element={<ProtectedRoute element={RemunerationDetail} />} />
+        <Route path="/maintenance-plan" element={<ProtectedRoute element={MaintenancePlan} />} />
         <Route path="/machines" element={<ProtectedRoute element={Machines} />} />
         <Route path="/machine-detail" element={<ProtectedRoute element={MaintenanceIndex} />} />
-        <Route path="/maintenance-plan" element={<ProtectedRoute element={MaintenancePlan} />} />
-
-
-
 
       </Routes>
     </div>

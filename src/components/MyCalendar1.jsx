@@ -14,6 +14,7 @@ const MyCalendar1 = () => {
   const [events, setEvents] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [titleModal, setTitleModal] = useState('');
+  const [isEdit, setIsEdit] = useState(false);
 
   const fetchEvents = async () => {
     const data = await CalendarService.getEvents();
@@ -34,6 +35,7 @@ const MyCalendar1 = () => {
     setEvents(formattedEvents);
   };
 
+
   useEffect(() => {
     fetchEvents();
   }, []);
@@ -46,9 +48,32 @@ const MyCalendar1 = () => {
   };
 
   const handleEventClick = (info) => {
-    // Mostrar un modal con la información del evento al hacer clic
-    setModalData(info.event);
+    setModalData({
+      id: info.event.id,
+      title: info.event.title,
+      start: info.event.startStr,
+      end: info.event.endStr,
+      description: info.event.extendedProps?.description || "Sin descripción"
+    });
     setShowModal(true);
+  };
+
+  const handleEdit = () => {
+    setShowModal(false);
+    setTitleModal('Editar Evento');
+    setIsEdit(true);
+    setShowForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+    setIsEdit(false);
+    fetchEvents();
+  };
+
+  const handleCloseInfoModal = () => {
+    setShowModal(false);
+    fetchEvents();
   };
 
   return (
@@ -70,16 +95,17 @@ const MyCalendar1 = () => {
       />
       <EventModal
         showModal={showModal}
-        handleCloseModal={() => setShowModal(false)}
+        handleCloseModal={handleCloseInfoModal}
         modalData={modalData}
+        handleEdit={handleEdit}
       />
 
       <EventForm
         show={showForm}
-        handleClose={() => setShowForm(false)}
+        handleClose={handleCloseForm}
         data={modalData}
-        isEdit={false}
-        title="Nuevo Evento"
+        isEdit={isEdit}
+        title={titleModal}
       />
     </>
 
