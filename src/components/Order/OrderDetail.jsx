@@ -307,6 +307,18 @@ function OrderDetail() {
     return start + ' ' + end;
   }
 
+
+  const getFileIcon = (fileName) => {
+    const extension = fileName.split('.').pop().toLowerCase();
+    if (['pdf'].includes(extension)) {
+      return <FaFilePdf className="icon" />;
+    } else if (['png', 'jpg', 'jpeg'].includes(extension)) {
+      return <FaImage style={styles.iconImage} />;
+    } else {
+      return <FaFilePdf className="icon" />; // Icono por defecto
+    }
+  };
+
   return (
     <>
       <div className="wrapper">
@@ -359,7 +371,7 @@ function OrderDetail() {
               detail.drawings.map((drawing) => (
                 <div key={drawing.id} className="drawingItem">
                   <span>
-                    <FaFilePdf className="icon" />
+                    {getFileIcon(drawing.name)}
                     <a href={drawing.view_url} target="_blank" rel="noopener noreferrer" className="drawingLink">
                       {formatName(drawing.name)}
                     </a>
@@ -417,7 +429,7 @@ function OrderDetail() {
               detail.supplier_delivery_notes.map((supplier_note) => (
                 <div key={supplier_note.id} style={styles.drawingItem}>
                   <span>
-                    <FaImage style={styles.iconImage} />
+                      {getFileIcon(supplier_note.name)}
                     <a href={supplier_note.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
                       {formatName(supplier_note.name)}
                     </a>
@@ -439,7 +451,7 @@ function OrderDetail() {
               detail.certificate_of_materials.map((certificate) => (
                 <div key={certificate.id} style={styles.drawingItem}>
                   <span>
-                    <FaImage style={styles.iconImage} />
+                    {getFileIcon(certificate.name)}
                     <a href={certificate.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
                       {formatName(certificate.name)}
                     </a>
@@ -461,7 +473,7 @@ function OrderDetail() {
               detail.delivery_notes.map((deliveryNote) => (
                 <div key={deliveryNote.id} style={styles.drawingItem}>
                   <span>
-                    <FaImage style={styles.iconImage} />
+                    {getFileIcon(deliveryNote.name)}
                     <a href={deliveryNote.view_url} target="_blank" rel="noopener noreferrer" style={styles.drawingLink}>
                       {formatName(deliveryNote.name)}
                     </a>

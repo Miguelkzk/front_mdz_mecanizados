@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import GenericTable from "../components/GenericTable";
 import { OrderService } from "../service/Order";
 import { Button, Form } from "react-bootstrap";
 import OrderForm from "../components/Order/OrderForm";
-import '../styles/Orders.css'
-import { useSearchParams } from 'react-router-dom';
+import '../styles/Orders.css';
 
 function Orders() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [orders, setOrders] = useState([]);
-  const [filterState, setFilterState] = useState('');
-  const [purchaseOrder, setPurchaseOrder] = useState('');
-  const [clientName, setClientName] = useState('');
-  const [orderName, setOrderName] = useState('');
+  const [filterState, setFilterState] = useState(searchParams.get('state') || '');
+  const [purchaseOrder, setPurchaseOrder] = useState(searchParams.get('purchaseOrder') || '');
+  const [clientName, setClientName] = useState(searchParams.get('clientName') || '');
+  const [orderName, setOrderName] = useState(searchParams.get('orderName') || '');
   const [currentPage, setCurrentPage] = useState(Number(searchParams.get('page')) || 1);
   const [totalPages, setTotalPages] = useState(1);
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const navigate = useNavigate();
+
   const fields = [
     'purchase_order',
     'client',
@@ -27,9 +27,8 @@ function Orders() {
     'state'
   ];
 
-  // Se ejecuta cuando cambian los filtros o la página
   useEffect(() => {
-    fetchOrders(currentPage);  // Asegúrate de pasar currentPage
+    fetchOrders(currentPage);
   }, [filterState, purchaseOrder, clientName, orderName, currentPage]);
 
   const fetchOrders = async (page) => {
@@ -40,14 +39,26 @@ function Orders() {
       orderName: orderName,
       page: page
     });
+
     setOrders(ordersData.orders);
     setCurrentPage(ordersData.current_page);
     setTotalPages(ordersData.total_pages);
     setNextPage(ordersData.next_page);
     setPrevPage(ordersData.prev_page);
 
-    // Actualizar los parámetros de la URL con la página actual
-    setSearchParams({ page: ordersData.current_page });
+    // Actualizar los parámetros de la URL con la página y filtros actuales
+    setSearchParams({
+      page: ordersData.current_page,
+      state: filterState,
+      purchaseOrder: purchaseOrder,
+      clientName: clientName,
+      orderName: orderName
+    });
+  };
+
+  const handleFilterChange = (setter) => (event) => {
+    setter(event.target.value);
+    setCurrentPage(1); // Reiniciar a la primera página al aplicar un filtro
   };
 
   const viewDetail = (element) => {
@@ -56,7 +67,7 @@ function Orders() {
 
   const handleCloseModal = () => {
     setShowForm(false);
-    fetchOrders(currentPage);  // Volver a la página actual al cerrar el modal
+    fetchOrders(currentPage);
   };
 
   const goToNextPage = () => {
@@ -85,7 +96,7 @@ function Orders() {
             <Form.Select
               className="filter"
               value={filterState}
-              onChange={(e) => setFilterState(e.target.value)}
+              onChange={handleFilterChange(setFilterState)}
             >
               <option value="">Todos los estados</option>
               <option value="without_material">Sin material</option>
@@ -102,7 +113,7 @@ function Orders() {
               type="text"
               placeholder="Nro. de orden de compra"
               value={purchaseOrder}
-              onChange={(e) => setPurchaseOrder(e.target.value)}
+              onChange={handleFilterChange(setPurchaseOrder)}
               className="formFilterInput"
             />
           </div>
@@ -114,7 +125,7 @@ function Orders() {
               type="text"
               placeholder="Nombre cliente"
               value={clientName}
-              onChange={(e) => setClientName(e.target.value)}
+              onChange={handleFilterChange(setClientName)}
               className="formFilterInput"
             />
           </div>
@@ -124,7 +135,7 @@ function Orders() {
               type="text"
               placeholder="Nombre de la orden"
               value={orderName}
-              onChange={(e) => setOrderName(e.target.value)}
+              onChange={handleFilterChange(setOrderName)}
               className="formFilterInput"
             />
           </div>

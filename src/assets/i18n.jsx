@@ -34,11 +34,12 @@ const resources = {
       'preventive': 'Preventivo',
       'biannual': 'Semestral',
       'brand': 'Marca',
-      'model': 'Modelo',
+      'model': 'Tipo',
       'horsepower': 'HP',
       'routine_detail': 'Detalle rutinario',
       'preventive_detail_biannual': 'Detalle preventivo semestral',
       'preventive_detail_annual': 'Detalle preventivo anual',
+      'routine': 'Rutina',
     }
   }
 };
