@@ -6,7 +6,7 @@ import NameForm from "../components/Name.form";
 import "../styles/clients&suppliers.css"
 
 function Clients() {
-  const fields = ['name'];
+  const fields = ['name', 'phone', 'email'];
   const [clients, setClients] = useState([]);
   const [client, setClient] =useState(false);
   const [title, setTitle] = useState('');

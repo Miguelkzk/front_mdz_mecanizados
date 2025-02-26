@@ -9,6 +9,19 @@ export const SupplierService = {
     });
     return handleResponse(response);
   },
+  getSuppliers_with_note: async () => {
+    const response = await fetch(`${BASE_URL}/suppliers/index_with_note`,{
+      headers: getHeaders()
+    });
+    return handleResponse(response);
+  },
+  getNotes: async (id) => {
+    const response = await fetch(`${BASE_URL}/suppliers/${id}/show_notes`,{
+      headers: getHeaders()
+    });
+    return handleResponse(response);
+  }
+  ,
   newSupplier: async (name) => {
     const response = await fetch(`${BASE_URL}/suppliers/`,
       {

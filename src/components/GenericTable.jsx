@@ -3,7 +3,7 @@ import ViewButton from "./Buttons/ViewButton";
 import EditButton from "./Buttons/EditButton";
 import DeleteButton from "./Buttons/DeleteButton";
 import { useTranslation } from "react-i18next";
-import '../styles/GenericTable.css'
+import '../styles/GenericTable.css';
 
 function GenericTable({ fields, elements, viewButton, textViewButton, viewElement, editButton, deleteButton, editElement, deleteElement }) {
   const { t } = useTranslation();
@@ -15,6 +15,15 @@ function GenericTable({ fields, elements, viewButton, textViewButton, viewElemen
     not_invoiced: "#cce5ff",
     delivered_and_invoiced: "#e2e3e5",
     incomplete: "#ffd9c2"
+  };
+
+  //  colores según proximidad
+  const getDateColor = (proximity, state) => {
+    if (state === "delivered_and_invoiced") return "inherit"; // No cambiar color
+
+    if (proximity <= 0) return "#f7775d";  // Rojo
+    if (proximity <= 6) return "#fdff8d";  // Amarillo
+    return "#94d29d";                      // Verde
   };
 
   const tableStyles = {
@@ -40,7 +49,10 @@ function GenericTable({ fields, elements, viewButton, textViewButton, viewElemen
           {elements.map((element) => (
             <tr key={element.id} style={{ backgroundColor: stateColors[element.state] || 'transparent' }}>
               {fields.map((attribute, attrIndex) => (
-                <td key={attrIndex}>
+                <td
+                  key={attrIndex}
+                  style={attribute === 'estimated_delivery_date' ? { backgroundColor: getDateColor(element.proximity, element.state) } : {}}
+                >
                   {t(element[attribute])}
                 </td>
               ))}

@@ -12,6 +12,7 @@ import RemunerationDetail from '../components/RemunerationDetail';
 import MaintenancePlan from '../pages/Maintenance_plan';
 import Machines from '../pages/Machines';
 import MaintenanceIndex from '../components/maintenance/MaintenanceIndex';
+import Assessments from '../components/Assessments/Assessments';
 
 const AppRoutes = () => {
   const location = useLocation(); // Obtener la ubicación actual
@@ -31,6 +32,8 @@ const AppRoutes = () => {
         <Route path="/maintenance-plan" element={<ProtectedRoute element={MaintenancePlan} />} />
         <Route path="/machines" element={<ProtectedRoute element={Machines} />} />
         <Route path="/machine-detail" element={<ProtectedRoute element={MaintenanceIndex} />} />
+        <Route path="/assessments" element={<ProtectedRoute element={Assessments} />} />
+
 
       </Routes>
     </div>

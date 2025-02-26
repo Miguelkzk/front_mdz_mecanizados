@@ -5,13 +5,13 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 const resources = {
   es: {
     translation: {
-      'id': 'ID',
+      'id': 'OT',
       "code": "Código",
       "name": "Nombre",
       'purchase_order': 'Orden de compra',
       'client': 'Cliente',
       'state': 'Estado',
-
+      'estimated_delivery_date': 'Fecha estimada de entrega',
       'without_material': 'Sin material',
       'with_material_but_not_started': 'Con material, pero no inciado',
       'in_progress': 'En progreso',
@@ -40,6 +40,9 @@ const resources = {
       'preventive_detail_biannual': 'Detalle preventivo semestral',
       'preventive_detail_annual': 'Detalle preventivo anual',
       'routine': 'Rutina',
+      'phone': 'Teléfono',
+      'email': 'Email',
+      'note': 'Nota',
     }
   }
 };

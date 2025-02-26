@@ -21,9 +21,11 @@ function Orders() {
   const navigate = useNavigate();
 
   const fields = [
+    'id',
     'purchase_order',
     'client',
-    'name',
+    'description',
+    'estimated_delivery_date',
     'state'
   ];
 
@@ -130,10 +132,10 @@ function Orders() {
             />
           </div>
           <div className="formFilterContainer">
-            <label className="filterLabel">Buscar por nombre:</label>
+            <label className="filterLabel">Buscar por descripción:</label>
             <Form.Control
               type="text"
-              placeholder="Nombre de la orden"
+              placeholder="Descripción de la orden"
               value={orderName}
               onChange={handleFilterChange(setOrderName)}
               className="formFilterInput"

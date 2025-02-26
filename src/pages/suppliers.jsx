@@ -3,17 +3,18 @@ import { SupplierService } from "../service/Supplier";
 import { Button } from "react-bootstrap";
 import GenericTable from "../components/GenericTable";
 import NameForm from "../components/Name.form";
+import { useNavigate } from "react-router-dom";
 
 function Suppliers(){
   const [suppliers, setSuppliers] = useState([]);
   const [supplier, setSupplier] = useState(false);
-  const fields = ['name'];
+  const fields = ['name', 'phone', 'email', 'note'];
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
-
+  const navigate = useNavigate();
 
   const fetchSuppliers = async () => {
-    const data  = await SupplierService.getSuppliers(name);
+    const data  = await SupplierService.getSuppliers_with_note();
     setSuppliers(data);
   }
 
@@ -39,6 +40,11 @@ function Suppliers(){
     setTitle('Editar proveedor');
   }
 
+  const viewDetail = (element) => {
+    navigate('/assessments', { state: { supplier: element } });
+
+  }
+
   return (
     <>
     <div className="container">
@@ -53,9 +59,11 @@ function Suppliers(){
         <GenericTable
           fields={fields}
           elements={suppliers}
-          viewButton={false}
+          viewButton={true}
+          textViewButton={"Evaluaciones"}
           editButton={true}
           editElement={editSupplier}
+          viewElement={viewDetail}
         />
       </div>
     </div>

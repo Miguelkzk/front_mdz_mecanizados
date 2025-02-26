@@ -6,7 +6,7 @@ import Notification from "./notification";
 import "../components/styles.css"
 
 function NameForm({ show, handleClose, title, type, editElement }) {
-  const [form, setForm] = useState({ name: '' });
+  const [form, setForm] = useState({ name: '', phone: '', email: ''});
   const [errors, setErrors] = useState([]);
   const [notification, setNotification] = useState({ show: false, message: '' });
 
@@ -14,7 +14,7 @@ function NameForm({ show, handleClose, title, type, editElement }) {
 
   useEffect(() => {
     if (editElement) {
-      setForm({ name: editElement.name || '' });
+      setForm({ name: editElement.name || '', phone: editElement.phone || '', email: editElement.email || '' });
     }
   }, [editElement]);
 
@@ -28,7 +28,8 @@ function NameForm({ show, handleClose, title, type, editElement }) {
 
   const handleCloseModal = () => {
     handleClose();
-    setForm({ name: '' });
+    setForm({ name: '', phone: '', email: '' });
+    setErrors([]);
   };
 
   const handleSave = async () => {
@@ -63,6 +64,7 @@ function NameForm({ show, handleClose, title, type, editElement }) {
   const validateForm = () => {
     let formErrors = {};
     if (!form.name) formErrors.name = 'El nombre no puede estar vacío';
+
     setErrors(formErrors);
     return Object.keys(formErrors).length === 0;
   };
@@ -93,6 +95,28 @@ function NameForm({ show, handleClose, title, type, editElement }) {
                 isInvalid={!!errors.name}
               />
               {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
+            </Form.Group>
+
+            <Form.Group className="mt-3">
+              <Form.Label>Teléfono</Form.Label>
+              <FormControl
+                type="text"
+                placeholder="Ingrese el teléfono"
+                name="phone"
+                value={form.phone}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+
+            <Form.Group className="mt-3">
+              <Form.Label>Email</Form.Label>
+              <FormControl
+                type="text"
+                placeholder="Ingrese el email"
+                name="email"
+                value={form.email}
+                onChange={handleInputChange}
+              />
             </Form.Group>
           </Form>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '3%' }}>

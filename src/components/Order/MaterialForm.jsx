@@ -90,7 +90,7 @@ function MaterialForm({ show, handleClose, orderID }) {
   const validateForm = () => {
     let formErrors = {};
     if (!material.description) formErrors.description = "La descripción es requerida";
-    if (!material.supplier_note) formErrors.description = "El remito es requerido";
+    if (!material.supplier_note) formErrors.supplier_note = "El remito es requerido";
     if (!material.quantity || material.quantity <= 0) formErrors.quantity = "La cantidad debe ser mayor que 0";
     if (!material.ingresed_at) formErrors.ingresed_at = "La fecha de ingreso es requerida";
     if (!material.supplier_id) formErrors.supplier_id = "Debe seleccionar un proveedor";
@@ -134,7 +134,6 @@ function MaterialForm({ show, handleClose, orderID }) {
         setSupplierName('');
         setFilteredSuppliers([]);
 
-        set
       } catch (error) {
         console.log(error)
       }
