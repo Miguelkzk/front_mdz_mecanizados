@@ -14,7 +14,7 @@ function Assessments() {
   const location = useLocation();
   const { supplier } = location.state || {};
   const [notes, setNotes] = useState([]);
-  const [assessment, setAssessment] = useState({});
+  const [assessment, setAssessment] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const fetchNotes = async () => {

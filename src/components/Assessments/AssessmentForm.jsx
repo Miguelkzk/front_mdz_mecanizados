@@ -78,10 +78,14 @@ function AssessmentForm({ show, handleClose, title, supplier, assessment }) {
       return;
     }
 
-    if (assessment) {
+    console.log(assessment);
+
+    if (assessment != '') {
       await assessmentService.updateAssessment(assessment.id, form);
+      console.log("Actualizando evaluación");
     } else {
       await assessmentService.newAssessment(form);
+      console.log("Guardando evaluación");
     }
 
     handleCloseModal();
