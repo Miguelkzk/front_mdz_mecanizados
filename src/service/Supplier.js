@@ -7,6 +7,7 @@ export const SupplierService = {
     const response = await fetch(`${BASE_URL}/suppliers/?name=${name}`,{
       headers: getHeaders()
     });
+    console.log(response);
     return handleResponse(response);
   },
   getSuppliers_with_note: async () => {

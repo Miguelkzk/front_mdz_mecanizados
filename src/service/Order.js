@@ -69,4 +69,26 @@ export const OrderService = {
     const data = await response.json();
     return data;
   },
+  generateReport: async (year) => {
+    const response =  await fetch(`${BASE_URL}/orders/production_sheet`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({year})
+    });
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+     const a = document.createElement('a');
+      a.href = url;
+
+      // Obtener el nombre del archivo del encabezado
+      const contentDisposition = response.headers.get('Content-Disposition');
+      console.log('contentDisposition:', contentDisposition);
+      const fileName = contentDisposition?.split('filename=')[1]?.split(';')[0]?.replace(/"/g, '') || `Plantilla.xlsx`;
+
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+  }
 }

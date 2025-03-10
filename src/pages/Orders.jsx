@@ -5,6 +5,7 @@ import { OrderService } from "../service/Order";
 import { Button, Form } from "react-bootstrap";
 import OrderForm from "../components/Order/OrderForm";
 import '../styles/Orders.css';
+import ReportModal from "../components/Order/ReportModal";
 
 function Orders() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -18,6 +19,7 @@ function Orders() {
   const [nextPage, setNextPage] = useState(null);
   const [prevPage, setPrevPage] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const navigate = useNavigate();
 
   const fields = [
@@ -84,11 +86,16 @@ function Orders() {
     }
   };
 
+  const handleCloseReportModal = () => {
+    setShowReportModal(false);
+  }
+
   return (
     <div className="container">
       <div className="headerContainer">
         <h2 className="title">Órdenes</h2>
-        <Button className="newOrderButton" onClick={() => setShowForm(true)}>Nueva orden</Button>
+        <Button style={{marginRight: '5px'}} onClick={()=> setShowReportModal(true)}>Exportar datos</Button>
+        <Button newOrderButton onClick={() => setShowForm(true)}>Nueva orden</Button>
       </div>
       <hr />
       <div className="actionsContainer">
@@ -158,6 +165,8 @@ function Orders() {
         title={'Nueva orden'}
         editOrder={''}
       />
+
+      <ReportModal show={showReportModal} handleClose={handleCloseReportModal} />
       <div className="paginationContainer">
         <button type="button" className="btn btn-outline-primary" onClick={goToPrevPage} disabled={!prevPage}>
           Anterior
